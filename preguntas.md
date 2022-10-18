@@ -9,3 +9,5 @@ Es decir, como de grande tiene q ser nuestro fichero de preguntas, cuantas pregu
 - [] Ordenar de forma aleatorioa es poner B C A D o cambiarle la letra a las preguntas?
 
 - [] hace falta ponerle numeritos a las preguntas?
+
+- [] hay que hacerlo todo en un mismo archivo o hay q hacer un archivo aparte para funciones?

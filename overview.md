@@ -20,6 +20,9 @@
 - [] Por cada pregunta individual del array dividirla en dos:
     - [] Quedarnos por una parte con la letra de la respuesta
     - [] Quedarnos por otra parte con el enunciado de la pregunta (resto del string)
+        - [] CASO DE RESPUESTAS ALEATORIO (-rr)
+            - [] Dividir el enunciado a su vez en dos, la pregutna y un array de 4 stirngs, q van a ser las opciones
+            - [] Volver a hacer lo de los indices aleatorios como para preguntas aleatorias
     
 - [] Imprimir el examen
     - [] Poner un titulo
