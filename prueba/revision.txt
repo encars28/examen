@@ -1,0 +1,51 @@
+CORRECT!
+
+¿Qué es el código ASCII?
+A. Código que asigna a cada caracter un número.
+B. Es un código internacional.
+C. Es un código que se usa para pasar de decinal al binario.
+D. Es un código que se usa para pasar de bianrio a decimal.
+ANSWER GIVEN: a
+CORRECT ANSWER: A
+
+INCORRECT :(
+
+El sistema de numeración binario se caracteriza por:
+A. Sólo puede haber dos digitos.
+B. Cada dígito puede tomar sólo dos valores distintos.
+C. Cada dígito puede tomar sólo diez valores distintos.
+D. El número de dígitos está limitado.
+ANSWER GIVEN: a
+CORRECT ANSWER: B
+
+INCORRECT :(
+
+El sistema de numeración decimal se caracteriza por:
+A. Sólo puede haber dos digitos.
+B. Cada dígito puede tomar sólo dos valores.
+C. Cada dígito puede tomar sólo diez valores distintos.
+D. El número de dígitos está limitado.
+ANSWER GIVEN: a
+CORRECT ANSWER: C
+
+INCORRECT :(
+
+El número en decimal 25 se expresa en binario de la siguiente forma:
+A. 11110.
+B. 1010100.
+C. 1011100.
+D. 11001.
+ANSWER GIVEN: a
+CORRECT ANSWER: D
+
+INCORRECT :(
+
+El número en binario 10111 se corresponde con el siguiente en decimal:
+A. 150.
+B. 23.
+C. 113.
+D. 17.
+ANSWER GIVEN: a
+CORRECT ANSWER: B
+
+PUNTUACION TOTAL: 1
