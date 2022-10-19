@@ -22,13 +22,24 @@ function help () {
    
 }
 
-while getopts ":f:hn:p:rr:r:" option;  do
+# completamente valido en bash 3
+while getopts ":f:n:p:rr:r:h" option;  do
     case $option in
         h) # mostrar mensaje de aydua
+            echo "$OPTARG"
             help
             exit 0;;
+        f)
+            echo "$OPTARG";;
+
+        :)
+            echo "Invalid option: $OPTARG requires an argument";;
+
         *) # Opcion por defecto
             echo 'Error: opcion no valida'
+            echo
+            echo
+            help
             exit 1;;
     esac
 done
