@@ -1,10 +1,10 @@
 # ESTRUCTURA GENERAL
 
 - [] Validacion de argumentos de la linea de comando:
-    - [] Imprimir los mensajes de error correspndientes si los argumentos no son validos 
-    - [] Comprobar que obligatoriamente ha metido un fichero
-        - [] Comprobar que ese fichero sea de extension .txt
-    - [] Guardar en variables la informacion proporcionada: numero de preguntas, aleatorio...
+    - [x] Imprimir los mensajes de error correspndientes si los argumentos no son validos 
+    - [x] Comprobar que obligatoriamente ha metido un fichero
+        - [x] Comprobar que ese fichero sea de extension .txt
+    - [x] Guardar en variables la informacion proporcionada: numero de preguntas, aleatorio...
 
 - [] Abrir el fichero con las preguntas e intentar:
     - [] Convertir cada pregunta en un solo string
