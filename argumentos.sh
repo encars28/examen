@@ -26,6 +26,8 @@ function help () {
     echo '4 si el parámetro no es un número positivo'
     echo '5 si se ha utilizado el argumento de ayuda con otros'
     echo '6 si se ha repetido el mismo argumento 2 veces'
+    echo '7 si no se ha pasado archivo de preguntas'
+    echo '8 si el fichero no existe'
 }
 
 if [[ $# -eq 0 ]]
@@ -82,7 +84,7 @@ while getopts ":hf:n:p:rx" option;  do
                 help
                 exit 0
             else
-                echo "Error"
+                echo "Error: -h va solo"
                 usage
                 exit 5
             fi
@@ -90,7 +92,7 @@ while getopts ":hf:n:p:rx" option;  do
         f)  
             if [[ ! ${usado["archivo"]} ]]
             then
-                if [[ $OPTARG != *.txt ]]
+                if [[ ! ($OPTARG =~ .+\.txt$) ]]
                 then
                     echo "Error: $OPTARG no es un archivo .txt"
                     usage
@@ -148,7 +150,7 @@ while getopts ":hf:n:p:rx" option;  do
             if [[ ! ${usado["alpreguntas"]} ]]
             then
                 preguntasAleatorias=true
-                echo 'Preguntas aleatorias activadas'
+                echo "Preguntas aleatorias = $preguntasAleatorias"
                 usado["alpreguntas"]=true
             else
                 echo "Error: -$option usado ya una vez"
@@ -160,7 +162,7 @@ while getopts ":hf:n:p:rx" option;  do
             if [[ ! ${usado["alrespuestas"]} ]]
             then
                 respuestasAleatorias=true
-                echo 'Respuestas aleatorias activadas'
+                echo "Respuestas aleatorias = $respuestasAleatorias"
                 usado["alrespuestas"]=true
             else
                 echo "Error: -rr usado ya una vez"
@@ -184,15 +186,30 @@ done
 # https://unix.stackexchange.com/questions/214141/explain-the-shell-command-shift-optind-1
 shift "$((OPTIND - 1))" 
 p=( "$@" )
+count=0
 for i in "${p[@]}";do
+    if [[ "$i" == "-f" ]]
+    then
+        p[$((count + 1))]="-"
+    fi
+    
     if [[ ! ("$i" =~ ^-.*) ]]
     then
         echo "Error: opcion $i no valida"
         usage
         exit 1
     fi
+
+    count=$((count + 1))
 done
 
+# el parametro f es obligatorio
+if [[ ! (${usado["archivo"]}) ]]
+then
+    echo "Error: no se ha incluido fichero de preguntas"
+    usage
+    exit 7
+fi
 
 # r puede ser -r o -rr, tengo que procesarlo a mano
 # params=("$@")

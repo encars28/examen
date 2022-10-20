@@ -1,6 +1,6 @@
 # ESTRUCTURA GENERAL
 
-- [] Validacion de argumentos de la linea de comando:
+- [x] Validacion de argumentos de la linea de comando:
     - [x] Imprimir los mensajes de error correspndientes si los argumentos no son validos 
     - [x] Comprobar que obligatoriamente ha metido un fichero
         - [x] Comprobar que ese fichero sea de extension .txt
@@ -9,6 +9,8 @@
 - [] Abrir el fichero con las preguntas e intentar:
     - [] Convertir cada pregunta en un solo string
     - [] Hacer un array de strings con todas las preguntas
+    - [] Comprobar que el numero de preguntas dadas no sea mayor que las que hay en el fichero
+    - [] Comprobar que el fichero existe
 
 - [] Quedarme solamente con el nuemro de preguntas que me piden (-n)
     - [] Coger del array de preguntas solo la parte que va desde el indice 0 hasta numero de preguntas - 1
