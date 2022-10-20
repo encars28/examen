@@ -139,7 +139,7 @@ while getopts ":hf:n:p:rx" option;  do
                 echo "$porcentaje"
                 usado["porcentaje"]=true
             else
-                echo "Error: -"$option" usado ya una vez"
+                echo "Error: -$option usado ya una vez"
                 usage
                 exit 6
             fi
@@ -151,7 +151,7 @@ while getopts ":hf:n:p:rx" option;  do
                 echo 'Preguntas aleatorias activadas'
                 usado["alpreguntas"]=true
             else
-                echo "Error: -"$option" usado ya una vez"
+                echo "Error: -$option usado ya una vez"
                 usage
                 exit 6
             fi
@@ -182,7 +182,6 @@ while getopts ":hf:n:p:rx" option;  do
 done
 
 # https://unix.stackexchange.com/questions/214141/explain-the-shell-command-shift-optind-1
-
 shift "$((OPTIND - 1))" 
 p=( "$@" )
 for i in "${p[@]}";do
