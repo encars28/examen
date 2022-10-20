@@ -9,7 +9,7 @@ numeroPreguntas=5
 preguntasAleatorias=false
 fichero=bancoPreguntas.txt
 
-if [ test -d fichero ]
+if [ test -a fichero ]
 then
     echo "Error: el fichero no existe"
     exit 8
