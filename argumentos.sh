@@ -47,6 +47,7 @@ fi
 numeroPreguntas=5
 preguntasAleatorias=false 
 respuestasAleatorias=false 
+porcentaje=0
 
 # Es un diccionario con valores de verdadero o falso, que indican si un argumento ha sido usado
 # De esta manera, puedo evitar que un mismo parametro se use dos veces
