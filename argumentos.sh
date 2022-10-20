@@ -58,7 +58,8 @@ declare -A usado=( [false]="archivo" [false]="numero" [false]="porcentaje" [fals
 params=("$@")
 declare -a newparams
 for i in "${params[@]}"; do
-    if [[ "$i" =~ ^-.*x ]]
+    if [[ "$i" =~ ^-.*x ]]  
+# el if coge cada parametro de los argumentos y comprueba que empieze por - y no tenga x
     then
         echo "Error: opcion -x no valida"
         usage
@@ -74,6 +75,7 @@ for i in "${params[@]}"; do
 done
 
 set -- "${newparams[@]}"
+
 
 while getopts ":hf:n:p:rx" option;  do
     #echo "$OPTIND"
