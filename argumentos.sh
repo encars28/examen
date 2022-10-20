@@ -114,9 +114,9 @@ while getopts ":hf:n:p:rx" option;  do
         n)
             if [[ ! ${usado["numero"]} ]]
             then
-                if [[ $OPTARG != +([0-9]) ]]
+                if [[ $OPTARG != +([0-9]) && $OPTARG == 0 ]]
                 then
-                    echo "Error: $OPTARG no es un numero positivo"
+                    echo "Error: $OPTARG es un numero negativo o es 0. El numero de preguntas debe de ser 1 o mas"
                     usage
                     exit 4
                 fi
