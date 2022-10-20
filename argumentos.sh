@@ -25,7 +25,15 @@ function help () {
     echo '3 si el archivo de preguntas no es de tipo .txt'
     echo '4 si el parámetro no es un número positivo'
     echo '5 si se ha utilizado el argumento de ayuda con otros'
+    echo '6 si se ha repetido el mismo argumento 2 veces'
 }
+
+if [[ $# -eq 0 ]]
+then
+    echo 'Por favor introduce un argumento'
+    usage
+    exit 1
+fi
 
 # getopts admite solo argumentos de un solo caracter (-h, -f...)
 # Por lo tango, cuando metemos algo como -he, te lo interpreta como si metieses -h -e separadamente
@@ -35,15 +43,39 @@ function help () {
 
 # Declaro las variables que se van a utilizar por defecto, salvo que el usuario diga lo contrario
 numeroPreguntas=5
-preguntasAleatorias=1 # False
-respuestasAleatorias=1 # False
+preguntasAleatorias=false 
+respuestasAleatorias=false 
 
 # Es un diccionario con valores de verdadero o falso, que indican si un argumento ha sido usado
 # De esta manera, puedo evitar que un mismo parametro se use dos veces
-declare -A usado=( [1]="archivo" [1]="numero" [1]="porcentaje" [1]="alpreguntas" [1]="alrespuestas")
+declare -A usado=( [false]="archivo" [false]="numero" [false]="porcentaje" [false]="alpreguntas" [false]="alrespuestas")
 
-while getopts ":hf:n:p:r" option;  do
-    case $option in
+
+# como getopts solo me lee valores de un solo caracter, voy a converitri -rr en -x
+params=("$@")
+declare -a newparams
+for i in "${params[@]}"; do
+    if [[ "$i" =~ ^-.*x ]]
+    then
+        echo "Error: opcion -x no valida"
+        usage
+        exit 1
+    fi
+
+    if [[ "$i" == "-rr" ]]
+    then 
+        newparams+=( "-x" )
+    else
+        newparams+=( "$i" )
+    fi
+done
+
+set -- "${newparams[@]}"
+
+while getopts ":hf:n:p:rx" option;  do
+    #echo "$OPTIND"
+    #echo "$option"
+    case $option in        
         h)  
             if [[ $# -eq 1 ]]
             then
@@ -52,7 +84,7 @@ while getopts ":hf:n:p:r" option;  do
             else
                 echo "Error"
                 usage
-                exti 5
+                exit 5
             fi
             ;;
         f)  
@@ -67,7 +99,11 @@ while getopts ":hf:n:p:r" option;  do
 
                 ficheroPreguntas=$OPTARG
                 echo "$ficheroPreguntas"
-                usado["archivo"]=0
+                usado["archivo"]=true
+            else
+                echo "Error: -$option usado ya una vez"
+                usage
+                exit 6
             fi
             ;;
         n)
@@ -82,7 +118,11 @@ while getopts ":hf:n:p:r" option;  do
     
                 numeroPreguntas=$OPTARG
                 echo "$numeroPreguntas"
-                usado["numero"]=0
+                usado["numero"]=true
+            else
+                echo "Error: -$option usado ya una vez"
+                usage
+                exit 6
             fi
             ;;
         p)
@@ -97,20 +137,35 @@ while getopts ":hf:n:p:r" option;  do
 
                 porcentaje=$OPTARG
                 echo "$porcentaje"
-                usado["porcentaje"]=0
+                usado["porcentaje"]=true
+            else
+                echo "Error: -"$option" usado ya una vez"
+                usage
+                exit 6
             fi
             ;;
         r)
-            if [[ ! ${usado["alpreguntas"]} && ($OPTIND -ne $(($OPTIND - 1))) ]]
+            if [[ ! ${usado["alpreguntas"]} ]]
             then
-                preguntasAleatorias=0 # 0 es true en bash
+                preguntasAleatorias=true
                 echo 'Preguntas aleatorias activadas'
-                usado["alpreguntas"]=0
-            elif [[ ! ${usado["alrespuestas"]} && ($OPTIND -eq $(($OPTIND - 1))) ]]
+                usado["alpreguntas"]=true
+            else
+                echo "Error: -"$option" usado ya una vez"
+                usage
+                exit 6
+            fi
+            ;;
+        x)
+            if [[ ! ${usado["alrespuestas"]} ]]
             then
-                respuestasAleatorias=0
+                respuestasAleatorias=true
                 echo 'Respuestas aleatorias activadas'
-                usado["alrespuestas"]=0
+                usado["alrespuestas"]=true
+            else
+                echo "Error: -rr usado ya una vez"
+                usage
+                exit 6
             fi
             ;;
         :)
@@ -125,3 +180,40 @@ while getopts ":hf:n:p:r" option;  do
             ;;
     esac
 done
+
+# https://unix.stackexchange.com/questions/214141/explain-the-shell-command-shift-optind-1
+
+shift "$((OPTIND - 1))" 
+p=( "$@" )
+for i in "${p[@]}";do
+    if [[ ! ("$i" =~ ^-.*) ]]
+    then
+        echo "Error: opcion $i no valida"
+        usage
+        exit 1
+    fi
+done
+
+
+# r puede ser -r o -rr, tengo que procesarlo a mano
+# params=("$@")
+# readarray paramsAleatorios < <(printf '%s\n' "${params[@]}" | grep "r")
+# for i in "${paramsAleatorios[@]}"; do
+#     echo "$i"
+#     if [[ ! ${usado["alpreguntas"]} && $i == "-r" ]]
+#     then
+#         preguntasAleatorias=true
+#         echo 'Preguntas aleatorias activadas'
+#         usado["alpreguntas"]=true
+#     fi
+
+#     if [[ ! ${usado["alrespuestas"]} && $i == "-rr" ]]
+#     then
+#         respuestasAleatorias=true
+#         echo 'Respuestas aleatorias activadas'
+#         usado["alrespuestas"]=true
+#     fi
+
+# done
+
+

@@ -1,3 +1,5 @@
 #!/bin/bash
+array=("$@")
+array2=( "$(printf '%s\n' "${array[@]}" | grep "a")" )
 
-[[ $1 == +([0-9]) ]] && echo "$1 is an integer" && echo $(($1 + 1))
+printf '%s\n' "${array2[@]}"
