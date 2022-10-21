@@ -43,14 +43,15 @@ fi
 # Por defecto, el numero de preguntas es 5, las pregutnas no restasn (por lo que no hay porcentaje)
 # y las respuestas y las preguntas aleatorias estan desactivadas
 numeroPreguntas=5
-preguntasAleatorias=false 
-respuestasAleatorias=false 
+preguntasAleatorias=1 
+respuestasAleatorias=1 
 porcentaje=0
 
 # Declaro un diccionario que me indica si el argumento ha sido introducido 
 # False: no ha sido introducido ninguna vez
 # True: ha sido introducido
-declare -A usado=( ["-f"]=false ["-n"]=false ["-p"]=false ["-r"]=false ["-rr"]=false)
+declare -A usado=( ["-f"]=1 ["-n"]=1 ["-p"]=1 ["-r"]=1 ["-rr"]=1)
+parametro=1
 
 # Despues, compruebo que todos los argumentos que me pasan son validos
 
@@ -58,9 +59,14 @@ declare -A usado=( ["-f"]=false ["-n"]=false ["-p"]=false ["-r"]=false ["-rr"]=f
 # diferenciar un elemento de otro
 params=( "$@" )
 # Hago un buche for para recorrer la lista
-for argumento in "${params[@]}"
+for i in "${!params[@]}"
 do
-   case "${argumento}" in
+    if [[ $parametro -eq 0 ]]
+    then
+        continue
+    fi
+
+   case "${params[i]}" in
     -h)
         if [[ $# -eq 1 ]]
         then
@@ -73,23 +79,21 @@ do
         fi
     ;;
     -f)
-        if [[ ! ${usado["archivo"]} ]]
+        if [[ ${usado["-f"]} -eq 1 ]]
         then
-            if [[  ]]
+            if [[ "${params[$((i + 1))]}" =~ .+?\.txt$ ]]
             then
-                if [[ ! ($OPTARG =~ .+\.txt$) ]]
-                then
-                    echo "Error: $OPTARG no es un archivo .txt"
-                    usage
-                    exit 3
-                fi
-
-                ficheroPreguntas=$OPTARG
+                ficheroPreguntas=${params[$((i + 1))]}
                 echo "$ficheroPreguntas"
-                usado["archivo"]=true
+                usado["-f"]=0
+                parametro=0
+            else
+                echo "Error: ${params[i]} requiere un parámetro de tipo .txt"
+                usage
+                exit 2
             fi
         else
-            echo "Error: $argumento usado ya una vez"
+            echo "Error: ${params[i]} usado ya una vez"
             usage
             exit 6
         fi
@@ -107,7 +111,7 @@ do
         echo "rr"
     ;;
     *)
-        echo "Error: argumento $argumento no valido"
+        echo "Error: argumento ${params[i]} no valido"
         usage
         exit 1
         ;;

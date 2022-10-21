@@ -3,14 +3,13 @@
 # [] Abrir el fichero con las preguntas e intentar:
 #     [] Convertir cada pregunta en un solo string
 #     [] Hacer un array de strings con todas las preguntas
-#     [] Comprobar que el numero de preguntas dadas no sea mayor que las que hay en el fichero
+#     [x] Comprobar que el numero de preguntas dadas no sea mayor que las que hay en el fichero
 
 numeroPreguntas=5
 preguntasAleatorias=false
 fichero=bancoPreguntas.txt
 
 declare -A pregunta
-declare -a todasPreguntas
 
 #if test -a fichero
 #then
