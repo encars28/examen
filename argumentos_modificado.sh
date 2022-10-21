@@ -29,3 +29,88 @@ function help () {
     echo '7 si no se ha pasado archivo de preguntas'
     echo '8 si el fichero no existe'
 }
+
+
+# Lo primero que hago es comprobar que nos pasan al menos un argumento
+# En caso contrario, devuelve error
+if [[ $# -eq 0 ]]
+then
+    echo 'Por favor introduce un argumento'
+    usage
+    exit 1
+fi
+
+# Por defecto, el numero de preguntas es 5, las pregutnas no restasn (por lo que no hay porcentaje)
+# y las respuestas y las preguntas aleatorias estan desactivadas
+numeroPreguntas=5
+preguntasAleatorias=false 
+respuestasAleatorias=false 
+porcentaje=0
+
+# Declaro un diccionario que me indica si el argumento ha sido introducido 
+# False: no ha sido introducido ninguna vez
+# True: ha sido introducido
+declare -A usado=( [false]="-f" [false]="-n" [false]="-p" [false]="-r" [false]="-rr")
+
+# Despues, compruebo que todos los argumentos que me pasan son validos
+
+# Meto todos los argumnentos en una lista, de manera el espacio en blanco sirva para 
+# diferenciar un elemento de otro
+params=( "$@" )
+# Hago un buche for para recorrer la lista
+for argumento in "${params[@]}"
+do
+   case "${argumento}" in
+    -h)
+        if [[ $# -eq 1 ]]
+        then
+            help
+            exit 0
+        else
+            echo "Error: Uso incorrecto de -h"
+            usage
+            exit 5
+        fi
+    ;;
+    -f)
+        if [[ ! ${usado["archivo"]} ]]
+        then
+            if [[  ]]
+            then
+                if [[ ! ($OPTARG =~ .+\.txt$) ]]
+                then
+                    echo "Error: $OPTARG no es un archivo .txt"
+                    usage
+                    exit 3
+                fi
+    
+                ficheroPreguntas=$OPTARG
+                echo "$ficheroPreguntas"
+                usado["archivo"]=true
+            fi
+        else
+            echo "Error: $argumento usado ya una vez"
+            usage
+            exit 6
+        fi
+    ;;
+    -n)
+        echo "n"
+    ;;
+    -p)
+        echo "p"
+    ;;
+    -r)
+        echo "r"
+    ;;
+    -rr)
+        echo "rr"
+    ;;
+    *)
+        echo "Error: argumento $argumento no valido"
+        usage
+        exit 1
+        ;;
+   esac
+
+done
