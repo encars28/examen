@@ -82,9 +82,14 @@ do
     -f)
         if [[ ${usado["-f"]} == false ]]
         then
-            if [[ "${params[$((i + 1))]}" =~ .+?\.txt$ ]]
+            if [[ "${params[$((i + 1))]}" =~ .+\.txt$ ]]
             then
                 ficheroPreguntas=${params[$((i + 1))]}
+                if ! test -r "$ficheroPreguntas"
+                then
+                     echo "Error: el fichero no existe"
+                    exit 8
+                fi
                 echo "$ficheroPreguntas"
                 usado["-f"]=true
                 parametro=true
@@ -102,9 +107,9 @@ do
     -n)
         if [[ ${usado["-n"]} == false ]]
         then
-            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" == 0 ]]
+            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ [^1-9] ]]
             then
-                echo "Error: ${params[$((i + 1))]} es invalido. El numero de preguntas debe de ser 1 o mas"
+                echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
                 usage
                 exit 4
             fi
@@ -122,15 +127,16 @@ do
     -p)
         if [[ ${usado["-p"]} == false ]]
         then
-            if [[ "${params[$((i + 1))]}" != +([0-9]) ]]
+            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ [^1-9] ]]
             then
-                echo "Error: ${params[$((i + 1))]} no es un numero positivo"
+                echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
                 usage
                 exit 4
             fi
             porcentaje="${params[$((i + 1))]}"
             echo "$porcentaje"
             usado["-p"]=true
+            parametro=true
         else
             echo "Error: ${params[$i]} usado ya una vez"
             usage
