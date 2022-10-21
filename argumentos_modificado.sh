@@ -110,7 +110,7 @@ do
     -n)
         if [[ ${usado["-n"]} == false ]]
         then
-            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ [^1-9] ]]
+            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ ^[^1-9] ]]
             then
                 echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
                 usage
@@ -130,7 +130,7 @@ do
     -p)
         if [[ ${usado["-p"]} == false ]]
         then
-            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ [^1-9] ]]
+            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ ^[^1-9] || "${params[$((i + 1))]}" -gt 100 ]]
             then
                 echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
                 usage
