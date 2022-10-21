@@ -50,7 +50,7 @@ porcentaje=0
 # Declaro un diccionario que me indica si el argumento ha sido introducido 
 # False: no ha sido introducido ninguna vez
 # True: ha sido introducido
-declare -A usado=( [false]="-f" [false]="-n" [false]="-p" [false]="-r" [false]="-rr")
+declare -A usado=( ["-f"]=false ["-n"]=false ["-p"]=false ["-r"]=false ["-rr"]=false)
 
 # Despues, compruebo que todos los argumentos que me pasan son validos
 
@@ -83,7 +83,7 @@ do
                     usage
                     exit 3
                 fi
-    
+
                 ficheroPreguntas=$OPTARG
                 echo "$ficheroPreguntas"
                 usado["archivo"]=true
