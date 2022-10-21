@@ -50,8 +50,8 @@ porcentaje=0
 # Declaro un diccionario que me indica si el argumento ha sido introducido 
 # False: no ha sido introducido ninguna vez
 # True: ha sido introducido
-declare -A usado=( ["-f"]=1 ["-n"]=1 ["-p"]=1 ["-r"]=1 ["-rr"]=1)
-parametro=1
+declare -A usado=( ["-f"]=false ["-n"]=false ["-p"]=false ["-r"]=false ["-rr"]=false)
+parametro=false
 
 # Despues, compruebo que todos los argumentos que me pasan son validos
 
@@ -61,12 +61,13 @@ params=( "$@" )
 # Hago un buche for para recorrer la lista
 for i in "${!params[@]}"
 do
-    if [[ $parametro -eq 0 ]]
+    if [[ $parametro == true ]]
     then
+        parametro=false
         continue
     fi
 
-   case "${params[i]}" in
+   case "${params[$i]}" in
     -h)
         if [[ $# -eq 1 ]]
         then
@@ -79,42 +80,100 @@ do
         fi
     ;;
     -f)
-        if [[ ${usado["-f"]} -eq 1 ]]
+        if [[ ${usado["-f"]} == false ]]
         then
             if [[ "${params[$((i + 1))]}" =~ .+?\.txt$ ]]
             then
                 ficheroPreguntas=${params[$((i + 1))]}
                 echo "$ficheroPreguntas"
-                usado["-f"]=0
-                parametro=0
+                usado["-f"]=true
+                parametro=true
             else
-                echo "Error: ${params[i]} requiere un parámetro de tipo .txt"
+                echo "Error: ${params[$i]} requiere un parámetro de tipo .txt"
                 usage
                 exit 2
             fi
         else
-            echo "Error: ${params[i]} usado ya una vez"
+            echo "Error: ${params[$i]} usado ya una vez"
             usage
             exit 6
         fi
     ;;
     -n)
-        echo "n"
+        if [[ ${usado["-n"]} == false ]]
+        then
+            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" == 0 ]]
+            then
+                echo "Error: ${params[$((i + 1))]} es invalido. El numero de preguntas debe de ser 1 o mas"
+                usage
+                exit 4
+            fi
+
+            numeroPreguntas="${params[$((i + 1))]}"
+            echo "$numeroPreguntas"
+            usado["-n"]=true
+            parametro=true
+        else
+            echo "Error: ${params[$i]} usado ya una vez"
+            usage
+            exit 6
+        fi
     ;;
     -p)
-        echo "p"
+        if [[ ${usado["-p"]} == false ]]
+        then
+            if [[ "${params[$((i + 1))]}" != +([0-9]) ]]
+            then
+                echo "Error: ${params[$((i + 1))]} no es un numero positivo"
+                usage
+                exit 4
+            fi
+            porcentaje="${params[$((i + 1))]}"
+            echo "$porcentaje"
+            usado["-p"]=true
+        else
+            echo "Error: ${params[$i]} usado ya una vez"
+            usage
+            exit 6
+        fi
     ;;
     -r)
-        echo "r"
+        if [[ ${usado["-r"]} == false ]]
+        then
+            preguntasAleatorias=true
+            echo "Preguntas aleatorias = $preguntasAleatorias"
+            usado["-r"]=true
+        else
+            echo "Error: ${params[$i]} usado ya una vez"
+            usage
+            exit 6
+        fi
     ;;
     -rr)
-        echo "rr"
+        if [[ ${usado["-rr"]} == false ]]
+        then
+            respuestasAleatorias=true
+            echo "Respuestas aleatorias = $respuestasAleatorias"
+            usado["-rr"]=true
+        else
+            echo "Error: -rr usado ya una vez"
+            usage
+            exit 6
+        fi
     ;;
     *)
-        echo "Error: argumento ${params[i]} no valido"
+        echo "Error: argumento ${params[$i]} no valido"
         usage
         exit 1
         ;;
    esac
 
 done
+
+# si no se ha incluido un fichero de texto, damos error
+if [[ ${usado["-f"]} == false ]]
+then
+    echo "Error: no se ha incluido fichero de preguntas"
+    usage
+    exit 7
+fi
