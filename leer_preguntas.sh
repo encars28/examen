@@ -9,8 +9,21 @@ numeroPreguntas=5
 preguntasAleatorias=false
 fichero=bancoPreguntas.txt
 
-if test -a fichero
-then
-    echo "Error: el fichero no existe"
-    exit 8
-fi
+declare - preguntas
+
+#if test -a fichero
+#then
+  #  echo "Error: el fichero no existe"
+   # exit 8
+#fi
+
+declare count=6;
+while read line
+do
+   temp=$(head -1 $fichero) 
+   preguntas+=($temp)
+   # temp=$(sed '1,7d' $fichero) 
+    if[count ==]
+    echo "${preguntas[@]}"
+    
+done < $fichero
