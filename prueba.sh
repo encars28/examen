@@ -1,5 +1,5 @@
 #!/bin/bash
 prueba=(hola adios pepa)
-delete="adios"
-prueba=( "${prueba[@]/$delete}" )
-printf '%s\n' "${prueba[@]}"
+unset 'prueba[1]'
+echo "${prueba[@]}"
+echo "${prueba[2]}"
