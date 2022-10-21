@@ -51,6 +51,9 @@ porcentaje=0
 # False: no ha sido introducido ninguna vez
 # True: ha sido introducido
 declare -A usado=( ["-f"]=false ["-n"]=false ["-p"]=false ["-r"]=false ["-rr"]=false)
+
+# Esta variable se pone a true con parametros como -p -n -f, para indicar que el siguiente elemento
+# de la lista no tiene q entrar en el switch (ya que es un parametro que ya ha sido analizado) y se pase al siguiente
 parametro=false
 
 # Despues, compruebo que todos los argumentos que me pasan son validos
