@@ -23,15 +23,14 @@ function help () {
     echo '1 si el argumento pasado no es válido'
     echo '2 si el argumento requiere obligatoriamente un parámetro y no se ha incluido'
     echo '3 si el archivo de preguntas no es de tipo .txt'
-    echo '4 si el parámetro no es un número positivo'
+    echo '4 si el parámetro no es un número mayor que 0'
     echo '5 si se ha utilizado el argumento de ayuda con otros'
     echo '6 si se ha repetido el mismo argumento 2 veces'
     echo '7 si no se ha pasado archivo de preguntas'
     echo '8 si el fichero no existe'
 }
 
-
-# Lo primero que hago es comprobar que nos pasan al menos un argumento
+# Lo primero que hacemos es comprobar que hay al menos un argumento
 # En caso contrario, devuelve error
 if [[ $# -eq 0 ]]
 then
@@ -40,11 +39,11 @@ then
     exit 1
 fi
 
-# Por defecto, el numero de preguntas es 5, las pregutnas no restasn (por lo que no hay porcentaje)
+# Por defecto, el numero de preguntas es 5, las preguntas no restasn (por lo que porcentaje=0)
 # y las respuestas y las preguntas aleatorias estan desactivadas
 numeroPreguntas=5
-preguntasAleatorias=1 
-respuestasAleatorias=1 
+preguntasAleatorias=false
+respuestasAleatorias=false
 porcentaje=0
 
 # Declaro un diccionario que me indica si el argumento ha sido introducido 
@@ -53,17 +52,18 @@ porcentaje=0
 declare -A usado=( ["-f"]=false ["-n"]=false ["-p"]=false ["-r"]=false ["-rr"]=false)
 
 # Esta variable se pone a true con parametros como -p -n -f, para indicar que el siguiente elemento
-# de la lista no tiene q entrar en el switch (ya que es un parametro que ya ha sido analizado) y se pase al siguiente
+# de la lista no tiene q entrar en el switch (ya que es un parametro que ya ha sido analizado) 
 parametro=false
 
-# Despues, compruebo que todos los argumentos que me pasan son validos
+# Ahora, compruebo que todos los argumentos que me pasan son validos
 
 # Meto todos los argumnentos en una lista, de manera el espacio en blanco sirva para 
 # diferenciar un elemento de otro
 params=( "$@" )
-# Hago un buche for para recorrer la lista
+# Hago un bucle for para recorrer la lista
 for i in "${!params[@]}"
 do
+    # nos saltamos el parametro
     if [[ $parametro == true ]]
     then
         parametro=false
@@ -72,6 +72,8 @@ do
 
    case "${params[$i]}" in
     -h)
+        # Comprobamos que no se han pasado mas argumentos con -h
+        # En caso contrario devolvemos un error
         if [[ $# -eq 1 ]]
         then
             help
@@ -83,10 +85,18 @@ do
         fi
     ;;
     -f)
+        # Primero comprobamos que el parametro -f no haya sido introducido ya
+        # Despues comprobamos que el siguiente elemento de la lista sea el fichero
+        # con las preguntas. En caso afirmativo activamos parametro y en caso negativo
+        # devolvemos error
         if [[ ${usado["-f"]} == false ]]
         then
+            # Para comprobar que es un fichero de texto usamos reegular expresions
+            # .+\.txt$ significa una cadena de texto con cualquier caracter, una o mas veces, que termine en .txt
             if [[ "${params[$((i + 1))]}" =~ .+\.txt$ ]]
             then
+                # Una vez que hemos comprobado que existe el parametro, comprobamos que existe la ruta que nos
+                # han pasado del fichero de texto y que este fichero tenga permisos de lectura
                 ficheroPreguntas=${params[$((i + 1))]}
                 if ! test -r "$ficheroPreguntas"
                 then
@@ -108,8 +118,13 @@ do
         fi
     ;;
     -n)
+        # Al igual que antes, comprobamos que -n no haya sido usada mas veces, y que despues de ella exista 
+        # un parametro que indique el numero de pregutnas
         if [[ ${usado["-n"]} == false ]]
         then
+            # Aqui usamos tambien regular expresions para asegurarnos de que el parametro sea un mayor que 0
+            # +([0-9]) signifiva cualquier combinaciond de numeros del 0 al 9, y ^[^1-9] significa cualqier cadena que empiece 
+            # por un caracter distinto del 1 o del 9 (de esta manera eliminamos posibles 0s)
             if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ ^[^1-9] ]]
             then
                 echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
@@ -128,6 +143,8 @@ do
         fi
     ;;
     -p)
+        # Hacemos exactamente las mismas comprobaciones que para -n, nada mas que ahora hay que comprobar que el porcentaje
+        # que nos pasen no sea mayor que 100
         if [[ ${usado["-p"]} == false ]]
         then
             if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ ^[^1-9] || "${params[$((i + 1))]}" -gt 100 ]]
@@ -147,6 +164,7 @@ do
         fi
     ;;
     -r)
+        # Aqui solo comprobamos que -r no haya sido usado anteriormente
         if [[ ${usado["-r"]} == false ]]
         then
             preguntasAleatorias=true
@@ -159,6 +177,7 @@ do
         fi
     ;;
     -rr)
+        # Al igual que antes, comprobamos que no haya sido usado anteriormente
         if [[ ${usado["-rr"]} == false ]]
         then
             respuestasAleatorias=true
@@ -171,6 +190,7 @@ do
         fi
     ;;
     *)
+        # Respuesta por defecto
         echo "Error: argumento ${params[$i]} no valido"
         usage
         exit 1
@@ -179,7 +199,7 @@ do
 
 done
 
-# si no se ha incluido un fichero de texto, damos error
+# Comprobamos que se incluya un fichero de preguntas
 if [[ ${usado["-f"]} == false ]]
 then
     echo "Error: no se ha incluido fichero de preguntas"
