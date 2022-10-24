@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# TODO: implementacion de aleatorio
 # PROBLEMA: encina no lee las tildes (lo demas bien)
 
-numeroPreguntas=5
-# preguntasAleatorias=false
+numeroPreguntas=3
+preguntasAleatorias=true
 fichero=bancoPreguntas.txt
+respuestasAleatorias=false
 
 declare -a lineas
 declare -A todasPreguntas
@@ -33,8 +33,53 @@ do
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
     # capturo las opciones en un array
     opciones=( "${lineas[@]:$((inicio + 1)):4}")
-    # TODO: comprobacion respuestas aleatorias
-    opcionesCadena=$( printf '%s\n' "${opciones[@]}")
+
+    if [[ $respuestasAleatorias == true ]]
+    then
+        while true 
+        do
+            if [[ ${#indicesUsados[@]} -ge 4 ]]
+            then
+                break
+            fi
+
+            indice=$((RANDOM % 4))
+            check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
+            if [[ $check != "$indice" ]]
+            then
+                enunciado=$( echo "${opciones[$indice]}" | cut -f 2- -d ' ' )
+
+                case "${#indicesUsados[@]}" in
+                0)
+                    opcionesAleatorias[0]="A. $enunciado"
+                ;;
+                1)
+                    opcionesAleatorias[1]="B. $enunciado"
+                ;;
+                2)
+                    opcionesAleatorias[2]="C. $enunciado"
+                ;;
+                3)
+                    opcionesAleatorias[3]="D. $enunciado"
+                ;;
+                *)
+                    echo "Error desconodico"
+                    exit
+                ;;
+                esac
+
+                indicesUsados+=( "$indice" )
+            fi
+
+        done
+
+        indicesUsados=()
+        opcionesCadena=$( printf '%s\n' "${opcionesAleatorias[@]}")
+
+    else
+        opcionesCadena=$( printf '%s\n' "${opciones[@]}")
+    fi
+
     todasPreguntas+=( ["$contador, opciones"]="$opcionesCadena" )
     respuesta=$( echo "${lineas[@]:$((inicio + 5)):1}" | cut -f 2 -d ' ' )
     todasPreguntas+=( ["$contador, respuesta"]=$respuesta )
@@ -54,13 +99,35 @@ fi
 
 # Ajustar el numero de preguntas al dado
 # TODO: comprobacion aleatorio
-i=0
-while [[ $i < $numeroPreguntas ]]
-do 
-    preguntas+=( ["$i, pregunta"]="${todasPreguntas["$i, pregunta"]}" )
-    preguntas+=( ["$i, opciones"]="${todasPreguntas["$i, opciones"]}" )
-    preguntas+=( ["$i, respuesta"]="${todasPreguntas["$i, respuesta"]}" )
-    i=$((i + 1))
-done
+if [[ $preguntasAleatorias == false ]]
+then
+    i=0
+    while [[ $i < $numeroPreguntas ]]
+    do 
+        preguntas+=( ["$i, pregunta"]="${todasPreguntas["$i, pregunta"]}" )
+        preguntas+=( ["$i, opciones"]="${todasPreguntas["$i, opciones"]}" )
+        preguntas+=( ["$i, respuesta"]="${todasPreguntas["$i, respuesta"]}" )
+        i=$((i + 1))
+    done
+else
+    while true 
+    do
+        if [[ ${#indicesUsados[@]} -ge $numeroPreguntas ]]
+        then
+            break
+        fi
+        indice=$((RANDOM % numeroPreguntas))
+        check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
+        if [[ $check != "$indice" ]]
+        then
+            preguntas+=( ["${#indicesUsados[@]}, pregunta"]="${todasPreguntas["$indice, pregunta"]}" )
+            preguntas+=( ["${#indicesUsados[@]}, opciones"]="${todasPreguntas["$indice, opciones"]}" )
+            preguntas+=( ["${#indicesUsados[@]}, respuesta"]="${todasPreguntas["$indice, respuesta"]}" )
+            indicesUsados+=( "$indice" )
+        fi
+
+    done
+fi
 
 # Tenemos todas las preguntas para imprimir ya 😎
+declare -p preguntas
