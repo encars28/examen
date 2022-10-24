@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# PROBLEMA: encina no lee las tildes (lo demas bien)
+# PROBLEMA: encina no lee las tildes 
 
 numeroPreguntas=3
 preguntasAleatorias=true
@@ -130,4 +130,3 @@ else
 fi
 
 # Tenemos todas las preguntas para imprimir ya 😎
-declare -p preguntas
