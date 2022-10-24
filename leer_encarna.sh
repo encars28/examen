@@ -9,23 +9,57 @@ numeroPreguntas=5
 preguntasAleatorias=false
 fichero=bancoPreguntas.txt
 
-declare -A pregunta
-declare -a preguntas
+# declare -A pregunta
+declare -a lineas
+declare -A preguntas
 
-#if test -a fichero
-#then
-  #  echo "Error: el fichero no existe"
-   # exit 8
-#fi
-
+# le quito el retorno de carro (en caso de que el fichero haya sido escrito en windows)
+# para no tener problemas con los saltos de linea
 temp=$(tr -d '\r' < $fichero)
 
-while [[ $temp != EOF ]]
+# Leemos el fichero linea a linea, eliminando los \n
+while read -r line
 do
-    preguntas+=( "$(echo "$temp" | head -6)" )
-    temp=$(echo "$temp" | sed '1,7d')
-    echo "${#preguntas[@]}"
+    # De esta manera elimino las nuevas lineas entre pregunta y pregunta
+    if [[ $line != "" ]]
+    then
+        lineas+=( "$line" )
+    fi
 done < <(echo "$temp")
+
+# Uno todas las lineas en preguntas, creando un arrray de preguntas
+inicio=0
+contador=0
+while [[ $inicio < ${#lineas[@]} ]]
+do
+    preguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
+    # capturo las opciones en un array
+    opciones=( "${lineas[@]:$((inicio + 1)):4}")
+    # le hago la comprobacion de si es aleatorio y en ese caso cambio el orden
+    opcionesCadena=$( printf '%s\n' "${opciones[@]}")
+    preguntas+=( ["$contador, opciones"]="$opcionesCadena" )
+    respuesta=$( echo "${lineas[@]:$((inicio + 5)):1}" | cut -f 2 -d ' ' )
+    preguntas+=( ["$contador, respuesta"]=$respuesta )
+
+    contador=$((contador + 1))
+    # cada pregunta esta formada por 6 lineas, 
+    inicio=$((inicio + 6))
+done
+
+preguntasFichero=$contador
+if [[ $numeroPreguntas > $preguntasFichero ]]
+then
+    echo "Error: el numero de preguntas introducido es mayor que el numero de preguntas del fichero"
+    exit
+fi
+
+
+
+# do
+#     preguntas+=( "$(echo "$temp" | head -6)" )
+#     temp=$(echo "$temp" | sed '1,7d')
+#     echo "${#preguntas[@]}"
+# done < <(echo "$temp")
 
 # declare -p preguntas
 
