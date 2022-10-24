@@ -6,22 +6,22 @@
         - [x] Comprobar que ese fichero sea de extension .txt
     - [x] Guardar en variables la informacion proporcionada: numero de preguntas, aleatorio...
 
-- [] Abrir el fichero con las preguntas e intentar:
-    - [] Convertir cada pregunta en un solo string
-    - [] Hacer un array de strings con todas las preguntas
-    - [] Comprobar que el numero de preguntas dadas no sea mayor que las que hay en el fichero
-    - [] Comprobar que el fichero existe
+- [x] Abrir el fichero con las preguntas e intentar:
+    - [x] Convertir cada pregunta en un solo string
+    - [x] Hacer un array de strings con todas las preguntas
+    - [x] Comprobar que el numero de preguntas dadas no sea mayor que las que hay en el fichero
+    - [x] Comprobar que el fichero existe
 
-- [] Quedarme solamente con el nuemro de preguntas que me piden (-n)
-    - [] Coger del array de preguntas solo la parte que va desde el indice 0 hasta numero de preguntas - 1
+- [x] Quedarme solamente con el nuemro de preguntas que me piden (-n)
+    - [x] Coger del array de preguntas solo la parte que va desde el indice 0 hasta numero de preguntas - 1
 
     - [] CASO PREUGUNTAS ALEATORIO (-r):
         - [] Conseguir numeros random desde 0 hasta el numero de preguntas (sin que se repitan)
         - [] Hacer un nuevo array con los elementos de la lista de preguntas con los indices aleatorios calculados
 
-- [] Por cada pregunta individual del array dividirla en dos:
-    - [] Quedarnos por una parte con la letra de la respuesta
-    - [] Quedarnos por otra parte con el enunciado de la pregunta (resto del string)
+- [x] Por cada pregunta individual del array dividirla en dos:
+    - [x] Quedarnos por una parte con la letra de la respuesta
+    - [x] Quedarnos por otra parte con el enunciado de la pregunta (resto del string)
         - [] CASO DE RESPUESTAS ALEATORIO (-rr)
             - [] Dividir el enunciado a su vez en dos, la pregutna y un array de 4 stirngs, q van a ser las opciones
             - [] Volver a hacer lo de los indices aleatorios como para preguntas aleatorias
