@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # TODO: implementacion de aleatorio
+# PROBLEMA: encina no lee las tildes (lo demas bien)
 
 numeroPreguntas=5
 # preguntasAleatorias=false
 fichero=bancoPreguntas.txt
 
-# declare -A pregunta
 declare -a lineas
 declare -A todasPreguntas
 declare -A preguntas
@@ -33,7 +33,7 @@ do
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
     # capturo las opciones en un array
     opciones=( "${lineas[@]:$((inicio + 1)):4}")
-    # le hago la comprobacion de si es aleatorio y en ese caso cambio el orden
+    # TODO: comprobacion respuestas aleatorias
     opcionesCadena=$( printf '%s\n' "${opciones[@]}")
     todasPreguntas+=( ["$contador, opciones"]="$opcionesCadena" )
     respuesta=$( echo "${lineas[@]:$((inicio + 5)):1}" | cut -f 2 -d ' ' )
@@ -46,8 +46,6 @@ done
 
 # compruebo que el numero de preguntas no sea mayor al que las que hay en el fichero
 preguntasFichero=$contador
-echo "$preguntasFichero"
-echo "$numeroPreguntas"
 if [[ $numeroPreguntas -gt $preguntasFichero ]]
 then
     echo "Error: el numero de preguntas introducido es mayor que el numero de preguntas del fichero"
@@ -66,5 +64,3 @@ do
 done
 
 # Tenemos todas las preguntas para imprimir ya 😎
-
-
