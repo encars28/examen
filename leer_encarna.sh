@@ -2,18 +2,40 @@
 
 # PROBLEMA: encina no lee las tildes 
 
+# Esta funcion te comprueba si un determinado elemento esta en una lista
+# Devuelve true en caso afirmativo y false en caso negativo
+
+# is_contained elemento lista
+function esta_contenido () {
+    elemento="$1"
+    shift
+    lista=( "$@" )
+
+    grp=$(printf "%s\n" "${lista[@]}" | grep -w "$elemento")
+    if [[ $grp != "$elemento" ]]
+    then 
+        echo true
+    else 
+        echo false
+    fi
+}
+
+function eliminar_retorno_carro () {
+    tr -d '\r' < "$1"
+}
+
 numeroPreguntas=3
 preguntasAleatorias=true
 fichero=bancoPreguntas.txt
 respuestasAleatorias=false
 
-declare -a lineas
+# declaro los dos diccionarios que voy a usar mas tarde
 declare -A todasPreguntas
 declare -A preguntas
 
 # le quito el retorno de carro (en caso de que el fichero haya sido escrito en windows)
 # para no tener problemas con los saltos de linea
-temp=$(tr -d '\r' < $fichero)
+temp=$(eliminar_retorno_carro $fichero)
 
 # Leemos el fichero linea a linea, eliminando los \n
 while read -r line
@@ -44,8 +66,12 @@ do
             fi
 
             indice=$((RANDOM % 4))
-            check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
-            if [[ $check != "$indice" ]]
+            contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
+
+            # check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
+            # if [[ $check != "$indice" ]]
+
+            if [[ $contenido == true ]]
             then
                 enunciado=$( echo "${opciones[$indice]}" | cut -f 2- -d ' ' )
 
@@ -116,13 +142,23 @@ else
         then
             break
         fi
+
         indice=$((RANDOM % numeroPreguntas))
-        check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
-        if [[ $check != "$indice" ]]
+        contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
+
+        # check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
+        # if [[ $check != "$indice" ]]
+
+        if [[ $contenido == true ]]
         then
-            preguntas+=( ["${#indicesUsados[@]}, pregunta"]="${todasPreguntas["$indice, pregunta"]}" )
-            preguntas+=( ["${#indicesUsados[@]}, opciones"]="${todasPreguntas["$indice, opciones"]}" )
-            preguntas+=( ["${#indicesUsados[@]}, respuesta"]="${todasPreguntas["$indice, respuesta"]}" )
+            for j in pregunta opciones respuesta
+            do
+                preguntas+=( ["${#indicesUsados[@]}, $j"]="${todasPreguntas["$indice, $j"]}" )
+            done
+
+            # preguntas+=( ["${#indicesUsados[@]}, pregunta"]="${todasPreguntas["$indice, pregunta"]}" )
+            # preguntas+=( ["${#indicesUsados[@]}, opciones"]="${todasPreguntas["$indice, opciones"]}" )
+            # preguntas+=( ["${#indicesUsados[@]}, respuesta"]="${todasPreguntas["$indice, respuesta"]}" )
             indicesUsados+=( "$indice" )
         fi
 
@@ -130,3 +166,4 @@ else
 fi
 
 # Tenemos todas las preguntas para imprimir ya 😎
+declare -p preguntas
