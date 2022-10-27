@@ -12,7 +12,7 @@ function esta_contenido () {
     lista=( "$@" )
 
     grp=$(printf "%s\n" "${lista[@]}" | grep -w "$elemento")
-    if [[ $grp != "$elemento" ]]
+    if [[ $grp == "$elemento" ]]
     then 
         echo true
     else 
@@ -24,10 +24,44 @@ function eliminar_retorno_carro () {
     tr -d '\r' < "$1"
 }
 
+# convertir ascii en caracter
+function char () {
+    echo "$1" | awk '{printf("%c",$1)}'
+}
+
+# falta ver la manera de pasarle el vector opciones como argumento
+function respuestas () {
+    while true 
+    do
+        longitud=${#indicesUsados[@]}
+        # 4 es el numero de opciones
+        if [[ $longitud -ge 4 ]]
+        then
+            break
+        fi
+
+        indice=$((RANDOM % 4))
+        contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
+
+        if [[ $contenido == false ]]
+        then
+            enunciado=$( echo "${opciones[$indice]}" | cut -f 2- -d ' ' )
+            letra=$(char $((longitud + 65)))
+            opcionesAleatorias[$longitud]="$letra. $enunciado"
+            indicesUsados+=( "$indice" )
+        fi
+
+    done
+
+    indicesUsados=()
+    opcionesCadena=$( printf '%s\n' "${opcionesAleatorias[@]}")
+    echo "$opcionesCadena"
+}
+
 numeroPreguntas=3
-preguntasAleatorias=true
+preguntasAleatorias=false
 fichero=bancoPreguntas.txt
-respuestasAleatorias=false
+respuestasAleatorias=true
 
 # declaro los dos diccionarios que voy a usar mas tarde
 declare -A todasPreguntas
@@ -54,13 +88,14 @@ while [[ $inicio < ${#lineas[@]} ]]
 do
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
     # capturo las opciones en un array
-    opciones=( "${lineas[@]:$((inicio + 1)):4}")
+    opciones=( "${lineas[@]:$((inicio + 1)):4}" )
 
     if [[ $respuestasAleatorias == true ]]
     then
         while true 
         do
-            if [[ ${#indicesUsados[@]} -ge 4 ]]
+            longitud=${#indicesUsados[@]}
+            if [[ $longitud -ge 4 ]]
             then
                 break
             fi
@@ -68,32 +103,11 @@ do
             indice=$((RANDOM % 4))
             contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
 
-            # check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
-            # if [[ $check != "$indice" ]]
-
-            if [[ $contenido == true ]]
+            if [[ $contenido == false ]]
             then
                 enunciado=$( echo "${opciones[$indice]}" | cut -f 2- -d ' ' )
-
-                case "${#indicesUsados[@]}" in
-                0)
-                    opcionesAleatorias[0]="A. $enunciado"
-                ;;
-                1)
-                    opcionesAleatorias[1]="B. $enunciado"
-                ;;
-                2)
-                    opcionesAleatorias[2]="C. $enunciado"
-                ;;
-                3)
-                    opcionesAleatorias[3]="D. $enunciado"
-                ;;
-                *)
-                    echo "Error desconodico"
-                    exit
-                ;;
-                esac
-
+                letra=$(char $((longitud + 65)))
+                opcionesAleatorias[$longitud]="$letra. $enunciado"
                 indicesUsados+=( "$indice" )
             fi
 
@@ -124,21 +138,23 @@ then
 fi
 
 # Ajustar el numero de preguntas al dado
-# TODO: comprobacion aleatorio
 if [[ $preguntasAleatorias == false ]]
 then
     i=0
     while [[ $i < $numeroPreguntas ]]
     do 
-        preguntas+=( ["$i, pregunta"]="${todasPreguntas["$i, pregunta"]}" )
-        preguntas+=( ["$i, opciones"]="${todasPreguntas["$i, opciones"]}" )
-        preguntas+=( ["$i, respuesta"]="${todasPreguntas["$i, respuesta"]}" )
+        for j in pregunta opciones respuesta
+        do
+            preguntas+=( ["$i, $j"]="${todasPreguntas["$i, $j"]}" )
+        done
+
         i=$((i + 1))
     done
 else
     while true 
     do
-        if [[ ${#indicesUsados[@]} -ge $numeroPreguntas ]]
+        longitud="${#indicesUsados[@]}"
+        if [[ $longitud -ge $numeroPreguntas ]]
         then
             break
         fi
@@ -153,12 +169,9 @@ else
         then
             for j in pregunta opciones respuesta
             do
-                preguntas+=( ["${#indicesUsados[@]}, $j"]="${todasPreguntas["$indice, $j"]}" )
+                preguntas+=( ["$longitud, $j"]="${todasPreguntas["$indice, $j"]}" )
             done
 
-            # preguntas+=( ["${#indicesUsados[@]}, pregunta"]="${todasPreguntas["$indice, pregunta"]}" )
-            # preguntas+=( ["${#indicesUsados[@]}, opciones"]="${todasPreguntas["$indice, opciones"]}" )
-            # preguntas+=( ["${#indicesUsados[@]}, respuesta"]="${todasPreguntas["$indice, respuesta"]}" )
             indicesUsados+=( "$indice" )
         fi
 
