@@ -29,39 +29,49 @@ function char () {
     echo "$1" | awk '{printf("%c",$1)}'
 }
 
-# falta ver la manera de pasarle el vector opciones como argumento
-function respuestas () {
-    while true 
-    do
+function indicesAleatorios () {
+    numeroOpciones=$1
+    while true
+    do 
         longitud=${#indicesUsados[@]}
-        # 4 es el numero de opciones
-        if [[ $longitud -ge 4 ]]
+        # condicion de salida del bucle
+        if [[ $longitud -ge $numeroOpciones ]]
         then
             break
         fi
 
-        indice=$((RANDOM % 4))
+        indice=$((RANDOM % numeroOpciones))
         contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
 
         if [[ $contenido == false ]]
-        then
-            enunciado=$( echo "${opciones[$indice]}" | cut -f 2- -d ' ' )
-            letra=$(char $((longitud + 65)))
-            opcionesAleatorias[$longitud]="$letra. $enunciado"
+        then 
             indicesUsados+=( "$indice" )
         fi
-
     done
 
-    indicesUsados=()
-    opcionesCadena=$( printf '%s\n' "${opcionesAleatorias[@]}")
+    # devuelvo el array con los indices aleatorios
+    echo "${indicesUsados[@]}"
+}
+
+function respuestas () {
+    readarray -t opciones < <(echo "$1")
+
+    indices=( indicesAleatorios 4 )
+    for (( i=0; i<4; i++))
+    do
+        enunciado=$( echo "${opciones[${indices[$i]}]}" | cut -f 2- -d ' ' ) 
+        letra=$(char $((i + 65)))
+        opcionesAleatorias[$i]="$letra. $enunciado"
+    done
+
+    printf -v opcionesCadena '%s\n' "${opcionesAleatorias[@]}"
     echo "$opcionesCadena"
 }
 
 numeroPreguntas=3
-preguntasAleatorias=false
+preguntasAleatorias=true
 fichero=bancoPreguntas.txt
-respuestasAleatorias=true
+respuestasAleatorias=false
 
 # declaro los dos diccionarios que voy a usar mas tarde
 declare -A todasPreguntas
@@ -72,61 +82,41 @@ declare -A preguntas
 temp=$(eliminar_retorno_carro $fichero)
 
 # Leemos el fichero linea a linea, eliminando los \n
-while read -r line
-do
-    # De esta manera elimino las nuevas lineas entre pregunta y pregunta
-    if [[ $line != "" ]]
-    then
-        lineas+=( "$line" )
-    fi
-done < <(echo "$temp")
+readarray -t lineas < <(echo "$temp")
 
 # Uno todas las lineas en preguntas, creando un arrray de preguntas
 inicio=0
 contador=0
-while [[ $inicio < ${#lineas[@]} ]]
+
+while [[ $inicio -lt ${#lineas[@]} ]]
 do
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
     # capturo las opciones en un array
     opciones=( "${lineas[@]:$((inicio + 1)):4}" )
+    printf -v opcionesCadena '%s\n' "${opciones[@]}"
 
     if [[ $respuestasAleatorias == true ]]
     then
-        while true 
+        indices=( $(indicesAleatorios 4) )
+        for (( i=0; i<4; i++))
         do
-            longitud=${#indicesUsados[@]}
-            if [[ $longitud -ge 4 ]]
-            then
-                break
-            fi
-
-            indice=$((RANDOM % 4))
-            contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
-
-            if [[ $contenido == false ]]
-            then
-                enunciado=$( echo "${opciones[$indice]}" | cut -f 2- -d ' ' )
-                letra=$(char $((longitud + 65)))
-                opcionesAleatorias[$longitud]="$letra. $enunciado"
-                indicesUsados+=( "$indice" )
-            fi
-
+            enunciado=$( echo "${opciones[${indices[$i]}]}" | cut -f 2- -d ' ' ) 
+            letra=$(char $((i + 65)))
+            opcionesAleatorias[$i]="$letra. $enunciado"
         done
 
-        indicesUsados=()
-        opcionesCadena=$( printf '%s\n' "${opcionesAleatorias[@]}")
-
-    else
-        opcionesCadena=$( printf '%s\n' "${opciones[@]}")
+        printf -v opcionesCadena '%s\n' "${opcionesAleatorias[@]}"  
     fi
 
     todasPreguntas+=( ["$contador, opciones"]="$opcionesCadena" )
+
     respuesta=$( echo "${lineas[@]:$((inicio + 5)):1}" | cut -f 2 -d ' ' )
     todasPreguntas+=( ["$contador, respuesta"]=$respuesta )
 
+
     contador=$((contador + 1))
-    # cada pregunta esta formada por 6 lineas
-    inicio=$((inicio + 6))
+    # cada pregunta esta formada por 6 lineas + 1 salto de linea
+    inicio=$((inicio + 7))
 done
 
 # compruebo que el numero de preguntas no sea mayor al que las que hay en el fichero
@@ -151,31 +141,16 @@ then
         i=$((i + 1))
     done
 else
-    while true 
+    indices=( $(indicesAleatorios $numeroPreguntas) )
+    for ((i=0; i<numeroPreguntas; i++))
     do
-        longitud="${#indicesUsados[@]}"
-        if [[ $longitud -ge $numeroPreguntas ]]
-        then
-            break
-        fi
-
-        indice=$((RANDOM % numeroPreguntas))
-        contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
-
-        # check=$(printf "%s\n" "${indicesUsados[@]}" | grep -w "$indice")
-        # if [[ $check != "$indice" ]]
-
-        if [[ $contenido == true ]]
-        then
-            for j in pregunta opciones respuesta
-            do
-                preguntas+=( ["$longitud, $j"]="${todasPreguntas["$indice, $j"]}" )
-            done
-
-            indicesUsados+=( "$indice" )
-        fi
-
+        for j in pregunta opciones respuesta
+        do
+            preguntas+=( ["$i, $j"]="${todasPreguntas["${indices[$i]}, $j"]}" )
+        done
     done
+    
+
 fi
 
 # Tenemos todas las preguntas para imprimir ya 😎
