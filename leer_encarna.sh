@@ -173,5 +173,24 @@ for ((i=0; i<numeroPreguntas; i++)); do
   
   echo
 done
-
 echo "Nota final: $nota / $numeroPreguntas"
+
+
+echo "Revision del examen" > revision.txt
+echo "" >> revision.txt
+for ((i=0;i<numeroPreguntas;i++)); do
+  
+  echo "pregunta $((i + 1))" >> revision.txt
+  for j in pregunta opciones; do
+    
+    echo "${preguntas[$i, $j]}" >> revision.txt
+    
+  done
+  
+  echo "Respuesta proporcionada por el alumno:  ${preguntas[$i, respuestaUsuario]}" >> revision.txt
+  echo "Respuesta correcta: ${preguntas[$i, respuesta]}" >> revision.txt
+  echo "${preguntas[$i, correcto]}" >> revision.txt
+  echo "" >> revision.txt
+done
+
+echo "Nota Final: $nota / $numeroPreguntas" >> revision.txt
