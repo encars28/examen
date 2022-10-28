@@ -416,19 +416,25 @@ do
     # ${lineas[@]:$inicio:1} -> A partir del elemento indicada por inicio, coge 1 elemento
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
 
-    # Guardo las opciones como un vector y luego lo convierto a cadena, ya que no hay forma
-    # directa de guardarla en cadena directamente
-    # ${lineas[@]:$((inicio + 1)):4} -> A partir del elemento indicada por inicio + 1, coge 4 elemento
+    # Guardamos las opciones como un vector y luego lo convierto a cadena, ya que así
+    # podemos añadir los saltos de línea más fácilmente 
+    # ${lineas[@]:$((inicio + 1)):4} -> A partir del elemento indicada por inicio + 1, coge 4 elementos
     opciones=( "${lineas[@]:$((inicio + 1)):4}" )
     printf -v opcionesCadena '%s\n' "${opciones[@]}"
 
     if [[ $respuestasAleatorias == true ]]
     then
+        # Guardamos los índices, generados de manera aleatoria
         read -r -a indices < <(indicesAleatorios 4)
         for (( i=0; i<4; i++))
         do
+            # Le cortamos la parte de la letra, para poder ponerlas de forma aleatoria
             enunciado=$( echo "${opciones[${indices[$i]}]}" | cut -f 2- -d ' ' ) 
+
+            # 65 es el codigo char de la "A", por lo que cuando i=0 letra será "A", cuando i=1 letra="B"...
             letra=$(char $((i + 65)))
+
+            # Juntamos el enunciado con su letra correspondiente y lo metemos en un vector
             opcionesAleatorias[$i]="$letra. $enunciado"
         done
 
@@ -437,16 +443,20 @@ do
 
     todasPreguntas+=( ["$contador, opciones"]="$opcionesCadena" )
 
+    # Guardamos la respuesta de manera que solo se guarde A, B, C o D
+    # ${lineas[@]:$((inicio + 5)):1} -> A partir del elemento indicado por inicio + 5, cogemos un elemento
     respuesta=$( echo "${lineas[@]:$((inicio + 5)):1}" | cut -f 2 -d ' ' )
     todasPreguntas+=( ["$contador, respuesta"]=$respuesta )
 
-
+    # Esta variable va a ir contando cuantas pregutnas tiene el fichero
     contador=$((contador + 1))
-    # cada pregunta esta formada por 6 lineas + 1 salto de linea
+
+    # Esta variable se incrementa de 7 en 7 porque cada pregunta esta formada por 6 lineas + 1 salto de linea
     inicio=$((inicio + 7))
 done
 
-# compruebo que el numero de preguntas no sea mayor al que las que hay en el fichero
+# Coomprobamos que el numero de preguntas no sea mayor al que las que hay en el fichero
+# En caso contrario devolvemos error
 preguntasFichero=$contador
 if [[ $numeroPreguntas -gt $preguntasFichero ]]
 then
@@ -454,9 +464,10 @@ then
     exit
 fi
 
-# Ajustar el numero de preguntas al dado
+# Ajustamos el numero de preguntas al dado o al que viene por defecto (5)
 if [[ $preguntasAleatorias == false ]]
 then
+    # Copiamos los 5 primeros elemnetos de todasPreguntas en preguntsa
     for ((i=0; i<numeroPreguntas; i++))
     do 
         for j in pregunta opciones respuesta
@@ -465,6 +476,8 @@ then
         done
     done
 else
+    # Generamos un vector de longitud numeroPreguntas, con números aleatorios
+    # que nos servirán de índices para elegir la pregunta en todasPreguntas
     read -r -a indices < <(indicesAleatorios "$numeroPreguntas")
     for ((i=0; i<numeroPreguntas; i++))
     do

@@ -1,12 +1,11 @@
-CORRECT!
-
+Pregunta 1 -> CORRECTO !
 ¿Qué es el código ASCII?
 A. Código que asigna a cada caracter un número.
 B. Es un código internacional.
 C. Es un código que se usa para pasar de decinal al binario.
 D. Es un código que se usa para pasar de bianrio a decimal.
-ANSWER GIVEN: a
-CORRECT ANSWER: A
+RESPUESTA DADA: A
+RESPUESTA CORRECTA: A
 
 INCORRECT :(
 
