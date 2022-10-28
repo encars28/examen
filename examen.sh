@@ -5,7 +5,7 @@
 # Grupo de prácticas PB1
 #
 # María Encarnación Sánchez Sánchez - 71062694P
-# Alejnadro Martín ...
+# Alejnadro Martín Martín           - 70832662E
 #
 
 #
@@ -391,13 +391,13 @@ declare -A preguntas            # Almacenará solo el número de preguntas pedid
         # "respuestaUsuario": almacena la respuesta introducida por el usuario (A, B, C o D)
         # "correcto": almacena una cadena que será "CORRECTO" o "INCORRECTO" dependiendo de si la respuesta del usuario es la correcta
 #
-# Descripción en forma de tabla:
-# Columnas(j) ->   "pregunta"   |   "opciones"  |   "respuesta"
-# Filas (i) -------------------------------------------------------
-#   0       |                   |               |
-# -----------------------------------------------------------------
-#   1       |                   |               |
-# -----------------------------------------------------------------
+# Ejemplo con dos preguntas:
+# Columnas(j) ->   "pregunta"               |   "opciones"    |   "respuesta"    |    "respuestaUsuario"  |   "correcto"  |
+# Filas (i) ------------------------------------------------------------------------------------------------------------------
+#   0       | "¿Qué es el código..."        | "A. Código ..." |       "A"        |           "B"          | "INCORRECTO"  |
+# ----------------------------------------------------------------------------------------------------------------------------
+#   1       | "El sistema de numeración..." | "A. Es ..."     |      "B"         |           "B"          |   "CORRECTO"  |
+# ---------------------------------------------------------------------------------------------------------------------------
 # ...
 
 # le quitamos el retorno de carro (en caso de que el fichero haya sido escrito en windows)
@@ -412,7 +412,13 @@ inicio=0        # Indica la línea del fichero donde empieza la siguiente pregut
 contador=0      # Indica el número de la pregunta
 while [[ $inicio -lt ${#lineas[@]} ]]
 do
+    # Guardo el enunciado en el campo pregunta
+    # ${lineas[@]:$inicio:1} -> A partir del elemento indicada por inicio, coge 1 elemento
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
+
+    # Guardo las opciones como un vector y luego lo convierto a cadena, ya que no hay forma
+    # directa de guardarla en cadena directamente
+    # ${lineas[@]:$((inicio + 1)):4} -> A partir del elemento indicada por inicio + 1, coge 4 elemento
     opciones=( "${lineas[@]:$((inicio + 1)):4}" )
     printf -v opcionesCadena '%s\n' "${opciones[@]}"
 
