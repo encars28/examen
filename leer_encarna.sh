@@ -54,7 +54,7 @@ function indicesAleatorios () {
 }
 
 numeroPreguntas=3
-preguntasAleatorias=true
+preguntasAleatorias=false
 fichero=bancoPreguntas.txt
 respuestasAleatorias=false
 
@@ -133,5 +133,45 @@ else
     done 
 fi
 
-# Tenemos todas las preguntas para imprimir ya 😎
-declare -p preguntas
+# Tenemos todas las preguntas para imprimir ya
+# Pongo por pantalla pregunta a pregunta con las opciones y pido la respuesta al usuario
+nota=0
+porcentaje=25
+
+for ((i=0; i<numeroPreguntas; i++)); do
+
+  echo "pregunta $((i + 1))"
+  
+  for j in pregunta opciones ; do
+  
+    echo "${preguntas[$i, $j]}"
+    
+  done
+  
+  read -p "Respuesta: " temporal
+  preguntas+=( [$i, respuestaUsuario]=${temporal^^} )
+
+  while [[ ${preguntas[$i, respuestaUsuario]} =~ [^ABCD] ]]; do
+
+    echo "Respuesta fuera de rango. Elige una opcion en rango (A, B, C, D)"
+    read -p "Respuesta: " temporal
+    preguntas[$i, respuestaUsuario]=${temporal^^} 
+    
+  done
+  
+  if [[ ${preguntas[$i, respuestaUsuario]} == ${preguntas[$i, respuesta]} ]]; then
+  
+# con bc le estoy diciendo al programa que use el bash calculator, y con el Scale la precision de decimales
+     nota=$(bc <<< "scale=2; $nota + 1")
+     preguntas+=( [$i, correcto]="RESPUESTA CORRECTA" )
+    
+  else  
+    
+    nota=$(bc <<< "scale=2; $nota - $porcentaje/100")
+    preguntas+=( [$i, correcto]="RESPUESTA INCORRECTA" )
+  fi 
+  
+  echo
+done
+
+echo "Nota final: $nota / $numeroPreguntas"
