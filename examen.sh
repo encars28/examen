@@ -487,6 +487,3 @@ else
         done
     done 
 fi
-
-# Tenemos todas las preguntas para imprimir ya 😎
-declare -p preguntas
