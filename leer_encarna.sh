@@ -82,7 +82,7 @@ do
 
     if [[ $respuestasAleatorias == true ]]
     then
-        indices=( $(indicesAleatorios 4) )
+        read -r -a indices < <(indicesAleatorios 4)
         for (( i=0; i<4; i++))
         do
             enunciado=$( echo "${opciones[${indices[$i]}]}" | cut -f 2- -d ' ' ) 
@@ -123,7 +123,7 @@ then
         done
     done
 else
-    indices=( $(indicesAleatorios $numeroPreguntas) )
+    read -r -a indices < <(indicesAleatorios $numeroPreguntas)
     for ((i=0; i<numeroPreguntas; i++))
     do
         for j in pregunta opciones respuesta
