@@ -53,21 +53,6 @@ function indicesAleatorios () {
     echo "${indicesUsados[@]}"
 }
 
-function respuestas () {
-    readarray -t opciones < <(echo "$1")
-
-    indices=( indicesAleatorios 4 )
-    for (( i=0; i<4; i++))
-    do
-        enunciado=$( echo "${opciones[${indices[$i]}]}" | cut -f 2- -d ' ' ) 
-        letra=$(char $((i + 65)))
-        opcionesAleatorias[$i]="$letra. $enunciado"
-    done
-
-    printf -v opcionesCadena '%s\n' "${opcionesAleatorias[@]}"
-    echo "$opcionesCadena"
-}
-
 numeroPreguntas=3
 preguntasAleatorias=true
 fichero=bancoPreguntas.txt
@@ -91,7 +76,7 @@ contador=0
 while [[ $inicio -lt ${#lineas[@]} ]]
 do
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
-    # capturo las opciones en un array
+
     opciones=( "${lineas[@]:$((inicio + 1)):4}" )
     printf -v opcionesCadena '%s\n' "${opciones[@]}"
 
@@ -130,15 +115,12 @@ fi
 # Ajustar el numero de preguntas al dado
 if [[ $preguntasAleatorias == false ]]
 then
-    i=0
-    while [[ $i < $numeroPreguntas ]]
+    for ((i=0; i<numeroPreguntas; i++))
     do 
         for j in pregunta opciones respuesta
         do
             preguntas+=( ["$i, $j"]="${todasPreguntas["$i, $j"]}" )
         done
-
-        i=$((i + 1))
     done
 else
     indices=( $(indicesAleatorios $numeroPreguntas) )
@@ -148,9 +130,7 @@ else
         do
             preguntas+=( ["$i, $j"]="${todasPreguntas["${indices[$i]}, $j"]}" )
         done
-    done
-    
-
+    done 
 fi
 
 # Tenemos todas las preguntas para imprimir ya 😎
