@@ -30,6 +30,15 @@ function help () {
     echo '8 si el fichero no existe'
 }
 
+function numero_mayor_0 () {
+    if [[ "$1" != +([0-9]) || "$1" =~ ^[^1-9] ]]
+    then
+        echo false
+    else
+        echo true
+    fi
+}
+
 # Lo primero que hacemos es comprobar que hay al menos un argumento
 # En caso contrario, devuelve error
 if [[ $# -eq 0 ]]
@@ -125,7 +134,8 @@ do
             # Aqui usamos tambien regular expresions para asegurarnos de que el parametro sea un mayor que 0
             # +([0-9]) signifiva cualquier combinaciond de numeros del 0 al 9, y ^[^1-9] significa cualqier cadena que empiece 
             # por un caracter distinto del 1 o del 9 (de esta manera eliminamos posibles 0s)
-            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ ^[^1-9] ]]
+            valido=$(numero_mayor_0 "${params[$((i + 1))]}")
+            if [[ $valido == false ]]
             then
                 echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
                 usage
@@ -147,7 +157,8 @@ do
         # que nos pasen no sea mayor que 100
         if [[ ${usado["-p"]} == false ]]
         then
-            if [[ "${params[$((i + 1))]}" != +([0-9]) || "${params[$((i + 1))]}" =~ ^[^1-9] || "${params[$((i + 1))]}" -gt 100 ]]
+            valido=$(numero_mayor_0 "${params[$((i + 1))]}")
+            if [[ $valido == false || "${params[$((i + 1))]}" -gt 100 ]]
             then
                 echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
                 usage
