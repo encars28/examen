@@ -1,10 +1,36 @@
 #!/bin/bash
 
-function usage () {
+#
+# PRIMERA PRÁCTICA EVALUABLE
+# Grupo de prácticas PB1
+#
+# María Encarnación Sánchez Sánchez - 71062694P
+# Alejnadro Martín ...
+#
+
+#
+# ========= FUNCIONES =========
+#
+
+###################################################################################
+# Imprime un mensaje que recuerda el uso del programa y sus argumentos
+# Uso: uso
+
+# ARGUMENTOS
+    # Ninguno
+###################################################################################
+function uso () {
     echo 'Uso: ./examen.sh -f bancoPreguntas.txt [-n numeroPreguntas][-p porcentajeError][-r preguntasAleatorias][-rr respuestasAleatorias]'
     echo 'Pista: ./examen.sh -h'
 }
 
+###################################################################################
+# Imprime un mensaje que especifíca un funcionamiento más detallado del programa
+# Uso: help
+
+# ARGUMENTOS
+    # Ninguno
+###################################################################################
 function help () {
     echo 'Uso: ./examen.sh -f bancoPreguntas.txt [-n numeroPreguntas][-p porcentajeError][-r preguntasAleatorias][-rr respuestasAleatorias]'
     echo
@@ -31,6 +57,17 @@ function help () {
     echo '8 si el fichero no existe'
 }
 
+############################################################################
+# Indica si una variable es un número entero (int) mayor que 0
+# Uso: numero_mayor_0 variable
+
+# ARGUMENTOS
+    # Variable a comprobar
+
+# RETURN 
+    # True si es un número entero mayor que 0
+    # False en caso contrario
+############################################################################
 function numero_mayor_0 () {
     if [[ "$1" != +([0-9]) || "$1" =~ ^[^1-9] ]]
     then
@@ -40,15 +77,30 @@ function numero_mayor_0 () {
     fi
 }
 
-# Esta funcion te comprueba si un determinado elemento esta en una lista
-# Devuelve true en caso afirmativo y false en caso negativo
+############################################################################
+# Indica si una variable esta contenida dentro de una lista
+# Uso: esta_contenido variable ${lista[@]}
 
+# ARGUMENTOS
+    # 1: Variable a comprobar
+    # 2: Lista (de forma como indicado en uso)
+
+# RETURN 
+    # True si la variable esta contenida en la lista
+    # False en caso contrario
+############################################################################
 function esta_contenido () {
+    # Capturo el elemento a comprobar
     elemento="$1"
     shift
+    # Capturo la lista
     lista=( "$@" )
 
+    # Aplico un filtrado con grep del elemento sobre la lista y lo almaceno en grp
     grp=$(printf "%s\n" "${lista[@]}" | grep -w "$elemento")
+
+    # Si el elemento está contenido el filtrado habrá dado como resultado el mismo elemento
+    # En caso contrario habrá devuelto una cadena vacía
     if [[ $grp == "$elemento" ]]
     then 
         echo true
@@ -57,17 +109,53 @@ function esta_contenido () {
     fi
 }
 
+############################################################################
+# Elimina los retornos de carro ('\r') de un fichero dado
+# Uso: eliminar_retorno_carro fichero
+
+# ARGUMENTOS
+    # Fichero
+############################################################################
 function eliminar_retorno_carro () {
+    # tr con la opción -d nos permite eliminar un caracter determinado de un fichero
     tr -d '\r' < "$1"
 }
 
-# convertir ascii en caracter
+############################################################################
+# Pasa de codigo ascii a caracter
+# Uso: char codigo
+
+# ARGUMENTOS
+    # Codigo ascii en decimal
+
+# RETURN 
+    # Caracter asociado al codigo ascii
+############################################################################
 function char () {
+    # la función awk te permite seleccionar distintas partes de un fichero o un texto
+    # y realizar sobre ellas distintas operaciones
     echo "$1" | awk '{printf("%c",$1)}'
+
+    # En este caso awk implementa una función printf muy parecida a la de c, 
+    # que a diferencia de la función printf de bash nos permite imprimir como 
+    # caracter una variable que en principio es un número
 }
 
+############################################################################
+# Genera un vector de una longitud dada (por la variable limite) de numeros aleatorios,
+# que irán desde 0 hasta el limite (no inclusive) -> [0, limite)
+# Uso: indicesAleatorios longitud
+
+# ARGUMENTOS
+    # limite 
+
+# RETURN 
+    # Vector con numeros aleatorios (de la forma ${lista[@]})
+############################################################################
 function indicesAleatorios () {
+    # Capturo el limite
     numeroOpciones=$1
+    # do-while
     while true
     do 
         longitud=${#indicesUsados[@]}
@@ -77,53 +165,69 @@ function indicesAleatorios () {
             break
         fi
 
+        # Genero el número aleatorio con la vairable random
+        # Al aplicar la operación módulo nos aseguramos de que el número aleatorio
+        # va a ser siempre menor que el limite que hemos proporcionado
         indice=$((RANDOM % numeroOpciones))
+
+        # contenido será true o false, dependiendo de si indice está en indicesUsados
         contenido=$(esta_contenido "$indice" "${indicesUsados[@]}")
 
+        # Si no lo está lo añadimos. En caso contrario continuamos con otra iteración del bucle
         if [[ $contenido == false ]]
         then 
             indicesUsados+=( "$indice" )
         fi
+
     done
 
-    # devuelvo el array con los indices aleatorios
+    # devuelvo el vector con los números aleatorios
     echo "${indicesUsados[@]}"
 }
 
-# Lo primero que hacemos es comprobar que hay al menos un argumento
-# En caso contrario, devuelve error
+#
+# ========= PROGRAMA =========
+#
+
+# COMPROBACIÓN Y VALIDACIÓN DE ARGUMENTOS
+
+# Comprobamos que hay al menos un argumento. En caso contrario, devolvemos error
 if [[ $# -eq 0 ]]
 then
     echo 'Por favor introduce un argumento'
-    usage
+    uso
     exit 1
 fi
 
-# Por defecto, el numero de preguntas es 5, las preguntas no restasn (por lo que porcentaje=0)
-# y las respuestas y las preguntas aleatorias estan desactivadas
-numeroPreguntas=5
-preguntasAleatorias=false
-respuestasAleatorias=false
-porcentaje=0
+# Declaramos los valores por defecto: 
+numeroPreguntas=5               # Examen de 5 preguntas
+preguntasAleatorias=false       # Sin preguntas aleatorias
+respuestasAleatorias=false      # Sin respuestas aleatorias
+porcentaje=0                    # Sin que las preguntas restes
 
-# Declaro un diccionario que me indica si el argumento ha sido introducido 
-# False: no ha sido introducido ninguna vez
-# True: ha sido introducido
+# Declaramos un diccionario que me indica para cada argumento si el usuario
+# lo ha introducido al menos una vez. De esta manera podemos comprobar que no haya
+# ningún argumento repetido
 declare -A usado=( ["-f"]=false ["-n"]=false ["-p"]=false ["-r"]=false ["-rr"]=false)
 
-# Esta variable se pone a true con parametros como -p -n -f, para indicar que el siguiente elemento
-# de la lista no tiene q entrar en el switch (ya que es un parametro que ya ha sido analizado) 
+# Esta variable se pone a true con argumentos como -p -n -f, para indicar que el siguiente elemento
+# de la lista de argumentos no tiene q entrar en el switch. 
+# Esto se debe a que este elemento es un parametro que ya ha sido analizado, ya que acompaña a uno
+# de estos argumentos que acabamos de mencionar.
 parametro=false
 
 # Ahora, compruebo que todos los argumentos que me pasan son validos
 
-# Meto todos los argumnentos en una lista, de manera el espacio en blanco sirva para 
+# Capturo todos los elementos en una lista, de manera el espacio en blanco sirva para 
 # diferenciar un elemento de otro
 params=( "$@" )
-# Hago un bucle for para recorrer la lista
+
+# Hago un bucle for para recorrer la lista de argumentos, de manera que 
+# la variable i irá adoptando los valores de los índices de params.
+# Es decir, i irá desde 0 hasta longtidud(params) - 1
 for i in "${!params[@]}"
 do
-    # nos saltamos el parametro
+    # nos saltamos el parametro y pasamos a otra iteración del bucle
     if [[ $parametro == true ]]
     then
         parametro=false
@@ -140,23 +244,22 @@ do
             exit 0
         else
             echo "Error: Uso incorrecto de -h"
-            usage
+            uso
             exit 5
         fi
     ;;
     -f)
         # Primero comprobamos que el parametro -f no haya sido introducido ya
-        # Despues comprobamos que el siguiente elemento de la lista sea el fichero
-        # con las preguntas. En caso afirmativo activamos parametro y en caso negativo
-        # devolvemos error
+        # Despues comprobamos que el siguiente elemento de la lista sea un fichero
+        # con las preguntas y que tenga permisos de lectura
+        # En caso afirmativo activamos parametro y en caso negativo devolvemos error
         if [[ ${usado["-f"]} == false ]]
         then
-            # Para comprobar que es un fichero de texto usamos reegular expresions
+            # Para comprobar que es un fichero de texto usamos expresiones regulares
             # .+\.txt$ significa una cadena de texto con cualquier caracter, una o mas veces, que termine en .txt
             if [[ "${params[$((i + 1))]}" =~ .+\.txt$ ]]
             then
-                # Una vez que hemos comprobado que existe el parametro, comprobamos que existe la ruta que nos
-                # han pasado del fichero de texto y que este fichero tenga permisos de lectura
+                # Comprobamos que la ruta que nos han pasado del fichero existe, y que tiene permisos de lectura
                 ficheroPreguntas=${params[$((i + 1))]}
                 if ! test -r "$ficheroPreguntas"
                 then
@@ -167,12 +270,12 @@ do
                 parametro=true
             else
                 echo "Error: ${params[$i]} requiere un parámetro de tipo .txt"
-                usage
+                uso
                 exit 2
             fi
         else
             echo "Error: ${params[$i]} usado ya una vez"
-            usage
+            uso
             exit 6
         fi
     ;;
@@ -188,7 +291,7 @@ do
             if [[ $valido == false ]]
             then
                 echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
-                usage
+                uso
                 exit 4
             fi
 
@@ -197,7 +300,7 @@ do
             parametro=true
         else
             echo "Error: ${params[$i]} usado ya una vez"
-            usage
+            uso
             exit 6
         fi
     ;;
@@ -210,7 +313,7 @@ do
             if [[ $valido == false || "${params[$((i + 1))]}" -gt 100 ]]
             then
                 echo "Error: ${params[$i]} requiere de un parametro que sea un numero mayor o igual a 1"
-                usage
+                uso
                 exit 4
             fi
             porcentaje="${params[$((i + 1))]}"
@@ -218,7 +321,7 @@ do
             parametro=true
         else
             echo "Error: ${params[$i]} usado ya una vez"
-            usage
+            uso
             exit 6
         fi
     ;;
@@ -230,7 +333,7 @@ do
             usado["-r"]=true
         else
             echo "Error: ${params[$i]} usado ya una vez"
-            usage
+            uso
             exit 6
         fi
     ;;
@@ -242,14 +345,14 @@ do
             usado["-rr"]=true
         else
             echo "Error: -rr usado ya una vez"
-            usage
+            uso
             exit 6
         fi
     ;;
     *)
         # Respuesta por defecto
         echo "Error: argumento ${params[$i]} no valido"
-        usage
+        uso
         exit 1
         ;;
    esac
@@ -260,7 +363,7 @@ done
 if [[ ${usado["-f"]} == false ]]
 then
     echo "Error: no se ha incluido fichero de preguntas"
-    usage
+    uso
     exit 7
 fi
 
