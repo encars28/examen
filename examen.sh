@@ -69,6 +69,9 @@ function help () {
     # False en caso contrario
 ############################################################################
 function numero_mayor_0 () {
+    # Usamos expresiones regulares
+    # +([0-9]) signifiva cualquier combinaciond de numeros del 0 al 9, y ^[^1-9] significa cualqier cadena que empiece 
+    # por un caracter distinto del 1 o del 9 (de esta manera eliminamos posibles 0s)
     if [[ "$1" != +([0-9]) || "$1" =~ ^[^1-9] ]]
     then
         echo false
@@ -259,6 +262,7 @@ do
             # .+\.txt$ significa una cadena de texto con cualquier caracter, una o mas veces, que termine en .txt
             if [[ "${params[$((i + 1))]}" =~ .+\.txt$ ]]
             then
+
                 # Comprobamos que la ruta que nos han pasado del fichero existe, y que tiene permisos de lectura
                 ficheroPreguntas=${params[$((i + 1))]}
                 if ! test -r "$ficheroPreguntas"
@@ -266,8 +270,9 @@ do
                     echo "Error: el fichero no existe"
                     exit 8
                 fi
-                usado["-f"]=true
-                parametro=true
+
+                usado["-f"]=true        # Indicamos que ya han introducido un parámetro -f
+                parametro=true          # Indicamos que el siguiente elemento en la lista es un parámetro que hay que saltarse
             else
                 echo "Error: ${params[$i]} requiere un parámetro de tipo .txt"
                 uso
@@ -280,13 +285,11 @@ do
         fi
     ;;
     -n)
-        # Al igual que antes, comprobamos que -n no haya sido usada mas veces, y que despues de ella exista 
-        # un parametro que indique el numero de pregutnas
+        # Al igual que antes, comprobamos que -n no haya sido usada mas veces, y que después de ella exista 
+        # un parámetro que indique el numero de preguntas
         if [[ ${usado["-n"]} == false ]]
         then
-            # Aqui usamos tambien regular expresions para asegurarnos de que el parametro sea un mayor que 0
-            # +([0-9]) signifiva cualquier combinaciond de numeros del 0 al 9, y ^[^1-9] significa cualqier cadena que empiece 
-            # por un caracter distinto del 1 o del 9 (de esta manera eliminamos posibles 0s)
+
             valido=$(numero_mayor_0 "${params[$((i + 1))]}")
             if [[ $valido == false ]]
             then
@@ -295,9 +298,9 @@ do
                 exit 4
             fi
 
-            numeroPreguntas="${params[$((i + 1))]}"
-            usado["-n"]=true
-            parametro=true
+            numeroPreguntas="${params[$((i + 1))]}"         
+            usado["-n"]=true                            # Indicamos que ya han introducido un parámetro -n
+            parametro=true                              # Indicamos que el siguiente elemento en la lista es un parámetro que hay que saltarse
         else
             echo "Error: ${params[$i]} usado ya una vez"
             uso
@@ -305,8 +308,7 @@ do
         fi
     ;;
     -p)
-        # Hacemos exactamente las mismas comprobaciones que para -n, nada mas que ahora hay que comprobar que el porcentaje
-        # que nos pasen no sea mayor que 100
+        # Hacemos exactamente las mismas comprobaciones que para -n, añadiendo que el porcentaje tenga que ser menor que 100
         if [[ ${usado["-p"]} == false ]]
         then
             valido=$(numero_mayor_0 "${params[$((i + 1))]}")
@@ -317,8 +319,8 @@ do
                 exit 4
             fi
             porcentaje="${params[$((i + 1))]}"
-            usado["-p"]=true
-            parametro=true
+            usado["-p"]=true                        # Indicamos que ya han introducido un parámetro -p
+            parametro=true                          # Indicamos que el siguiente elemento en la lista es un parámetro que hay que saltarse
         else
             echo "Error: ${params[$i]} usado ya una vez"
             uso
@@ -326,7 +328,7 @@ do
         fi
     ;;
     -r)
-        # Aqui solo comprobamos que -r no haya sido usado anteriormente
+        # Aqui solo comprobamos que -r no haya sido usado anteriormente, ya que no tiene parámetros
         if [[ ${usado["-r"]} == false ]]
         then
             preguntasAleatorias=true
@@ -367,27 +369,50 @@ then
     exit 7
 fi
 
-# PROBLEMA: encina no lee las tildes 
+# LECTURA DE PREGUNTAS DEL FICHERO
 
-# declaro los dos diccionarios que voy a usar mas tarde
-declare -A todasPreguntas
-declare -A preguntas
+# declaramos los dos diccionarios que voy a usar mas tarde
+declare -A todasPreguntas       # Almacenará todas las preguntas del fichero
+declare -A preguntas            # Almacenará solo el número de preguntas pedido
 
-# le quito el retorno de carro (en caso de que el fichero haya sido escrito en windows)
+# Como bash no permite arrays bidimensionales, hemos creado estos dos diccionarios, que intentan similar cada uno un array bidimensional
+# 
+# Ejemplo: Acceder al elemento ij 
+    # Normalmente se accedería así: todasPreguntas[i][j]
+    # Para simular esa sintaxis, hemos utilizado una cadena de caracteres, de manera que los dos índices están separados por una coma
+    # Por lo tanto, para acceder al elemento ij haríamos esto: todasPreguntas["$i, $j"]
+#
+# Descripción de los índices:
+    # Primer índice(i) -> con este indicaremos el número de la pregunta. Es decir, identificaresmos la pregunta 0, la pregunta 1, la pregunta 2...
+    # Segundo índice(j) -> indica la "parte" de la pregunta con la que estamos tratando. Tendrá solo 5 valores distintos:
+        # "pregunta": almacena el enunciado de la pregunta
+        # "opciones": almacena una cadena con las cuatro opcioens (A, B, C, D). Contiene saltos de línea entre las opciones
+        # "respuesta": almacena la respuesta correcta (A, B, C o D)
+        # "respuestaUsuario": almacena la respuesta introducida por el usuario (A, B, C o D)
+        # "correcto": almacena una cadena que será "CORRECTO" o "INCORRECTO" dependiendo de si la respuesta del usuario es la correcta
+#
+# Descripción en forma de tabla:
+# Columnas(j) ->   "pregunta"   |   "opciones"  |   "respuesta"
+# Filas (i) -------------------------------------------------------
+#   0       |                   |               |
+# -----------------------------------------------------------------
+#   1       |                   |               |
+# -----------------------------------------------------------------
+# ...
+
+# le quitamos el retorno de carro (en caso de que el fichero haya sido escrito en windows)
 # para no tener problemas con los saltos de linea
 temp=$(eliminar_retorno_carro "$ficheroPreguntas")
 
 # Leemos el fichero linea a linea, eliminando los \n
 readarray -t lineas < <(echo "$temp")
 
-# Uno todas las lineas en preguntas, creando un arrray de preguntas
-inicio=0
-contador=0
-
+# Recorro el vector con las líneas
+inicio=0        # Indica la línea del fichero donde empieza la siguiente pregutna
+contador=0      # Indica el número de la pregunta
 while [[ $inicio -lt ${#lineas[@]} ]]
 do
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
-
     opciones=( "${lineas[@]:$((inicio + 1)):4}" )
     printf -v opcionesCadena '%s\n' "${opciones[@]}"
 

@@ -13,7 +13,7 @@ D. El número de dígitos está limitado.
 ANSWER: B
 
 El sistema de numeración decimal se caracteriza por:
-A. Sólo puede haber dos digitos.
+A. Sólo puede haber dos digi tos.
 B. Cada dígito puede tomar sólo dos valores.
 C. Cada dígito puede tomar sólo diez valores distintos.
 D. El número de dígitos está limitado.
