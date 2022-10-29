@@ -539,12 +539,10 @@ for ((i=0; i<numeroPreguntas; i++)); do
   fi 
   
   echo
-  
+done
 # Compruebo si la nota es negativa con expresiones regulares. 
 # - comprueba que haya un - en la cadena, [0-9]* comprueba que haya 0 o mas caracteres entre 0 y 9
 # ([.][0-9]+)? comprueba que haya o 0 o 1 grupo de caracteres formado por un punto y 1 o mas caracteres entre 0 y 9
-done
-
 
 if  [[ "$nota" =~ -[0-9]*([.][0-9]+)? ]]; then
   
