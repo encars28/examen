@@ -408,10 +408,11 @@ temp=$(eliminar_retorno_carro "$ficheroPreguntas")
 readarray -t lineas < <(echo "$temp")
 
 # Recorro el vector con las líneas
-inicio=0        # Indica la línea del fichero donde empieza la siguiente pregutna
 contador=0      # Indica el número de la pregunta
-while [[ $inicio -lt ${#lineas[@]} ]]
+for (( inicio=0; inicio<${#lineas[@]}; inicio+=7 ))
 do
+    # Inicio se incrementa de 7 en 7 porque cada pregunta esta formada por 6 lineas + 1 salto de linea
+
     # Guardo el enunciado en el campo pregunta
     # ${lineas[@]:$inicio:1} -> A partir del elemento indicada por inicio, coge 1 elemento
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
@@ -450,9 +451,6 @@ do
 
     # Esta variable va a ir contando cuantas pregutnas tiene el fichero
     contador=$((contador + 1))
-
-    # Esta variable se incrementa de 7 en 7 porque cada pregunta esta formada por 6 lineas + 1 salto de linea
-    inicio=$((inicio + 7))
 done
 
 # Coomprobamos que el numero de preguntas no sea mayor al que las que hay en el fichero
@@ -483,7 +481,7 @@ else
     do
         for j in pregunta opciones respuesta
         do
-            preguntas+=( ["$i, $j"]="${todasPreguntas["${indices[$i]}, $j"]}" )
+            preguntas+=( ["$i, $j"]="${todasPreguntas[${indices[$i]}, $j]}" )
         done
     done 
 fi
@@ -492,10 +490,16 @@ fi
 
 nota=0  # En esta variables se va a ir calculando la nota pregunta a pregunta
 
+echo "-------- EXAMEN --------"
+echo
+read -p "Pulsa cualquier tecla para empezar"
+echo
+echo
+
 for ((i=0; i<numeroPreguntas; i++)); do
 
   #Primero pongo por pantalla el numero de pregunta, su enunciado y sus opciones
-  echo "pregunta $((i + 1))"
+  echo "PREGUNTA $((i + 1))"
   
   for j in pregunta opciones ; do
   
@@ -521,7 +525,7 @@ for ((i=0; i<numeroPreguntas; i++)); do
   done
   
   # Compruebo si la respuesta es Correcta o Incorrecta
-  if [[ ${preguntas[$i, respuestaUsuario]} == ${preguntas[$i, respuesta]} ]]; then
+  if [[ ${preguntas[$i, respuestaUsuario]} == "${preguntas[$i, respuesta]}" ]]; then
   
   
   # Ahora calculo la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
@@ -557,7 +561,7 @@ if [[ "$nota" =~ ^([.][0-9]+)$ ]]; then
   nota=0$nota
   
 fi  
-echo "Nota final:  $nota/ $numeroPreguntas"
+echo "Nota final:  $nota / $numeroPreguntas"
 
 
 # CREACION DEL FICHERO DE REVISIÓN

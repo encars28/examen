@@ -1,94 +1,28 @@
  -----Revision del examen----- 
 
 pregunta 1
-¿Cuál de los siguientes perféricos es de entrada?
-A. Altavoces.
-B. Microprocesador.
-C. Ratón.
-D. Monitor.
+¿Qué es el código ASCII?
+A. Código que asigna a cada caracter un número.
+B. Es un código internacional.
+C. Es un código que se usa para pasar de decinal al binario.
+D. Es un código que se usa para pasar de bianrio a decimal.
 
 Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     C
-PREGUNTA FALLADA
+Respuesta correcta:                     A
+PREGUNTA ACERTADA
 
 pregunta 2
-¿Qué es el código ASCII?
-A. Es un código que se usa para pasar de bianrio a decimal.
-B. Código que asigna a cada caracter un número.
-C. Es un código que se usa para pasar de decinal al binario.
-D. Es un código internacional.
+El sistema de numeración binario se caracteriza por:
+A. Sólo puede haber dos digitos.
+B. Cada dígito puede tomar sólo dos valores distintos.
+C. Cada dígito puede tomar sólo diez valores distintos.
+D. El número de dígitos está limitado.
 
 Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     A
-PREGUNTA ACERTADA
+Respuesta correcta:                     B
+PREGUNTA FALLADA
 
 pregunta 3
-¿Cuál es la unidad elemental de almacenamiento de información?
-A. BIT.
-B. KiloByte.
-C. Byte.
-D. TeraByte.
-
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     A
-PREGUNTA ACERTADA
-
-pregunta 4
-El número en decimal 25 se expresa en binario de la siguiente forma:
-A. 1011100.
-B. 1010100.
-C. 11001.
-D. 11110.
-
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     D
-PREGUNTA FALLADA
-
-pregunta 5
-1 TB (Terabyte) se corresponde con:
-A. 1000 GB (GigaBytes).
-B. 1024 GB (GigaBytes).
-C. 1024 MB (MegaBytes).
-D. 1000 MB (MegaBytes).
-
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     B
-PREGUNTA FALLADA
-
-pregunta 6
-El sistema de numeración binario se caracteriza por:
-A. Cada dígito puede tomar sólo diez valores distintos.
-B. El número de dígitos está limitado.
-C. Sólo puede haber dos digitos.
-D. Cada dígito puede tomar sólo dos valores distintos.
-
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     B
-PREGUNTA FALLADA
-
-pregunta 7
-El número en binario 10111 se corresponde con el siguiente en decimal:
-A. 23.
-B. 113.
-C. 17.
-D. 150.
-
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     B
-PREGUNTA FALLADA
-
-pregunta 8
-El número en binario 10010110 se corresponde con el siguiente en decimal:
-A. 113.
-B. 17.
-C. 23.
-D. 150.
-
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     A
-PREGUNTA ACERTADA
-
-pregunta 9
 El sistema de numeración decimal se caracteriza por:
 A. Sólo puede haber dos digi tos.
 B. Cada dígito puede tomar sólo dos valores.
@@ -99,15 +33,4 @@ Respuesta proporcionada por el alumno:  A
 Respuesta correcta:                     C
 PREGUNTA FALLADA
 
-pregunta 10
-Con cuatro dígitos en decimal, ¿cuántos números en binario distintos puedes almacenar?
-A. 32.
-B. 128.
-C. 16.
-D. 64.
-
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     A
-PREGUNTA ACERTADA
-
-Nota Final: 2.20 / 10
+Nota Final: 1.00 / 3
