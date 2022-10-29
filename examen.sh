@@ -561,6 +561,8 @@ if [[ "$nota" =~ ^([.][0-9]+)$ ]]; then
   nota=0$nota
   
 fi  
+echo "Archivo con la revisión realizado."
+echo
 echo "Nota final:  $nota / $numeroPreguntas"
 
 
@@ -577,7 +579,7 @@ echo "" >> revision.txt
 # Con este bucle for presento en el fichero todo el diccionario de preguntas
 for ((i=0;i<numeroPreguntas;i++)); do
   
-  echo "pregunta $((i + 1))" >> revision.txt
+  echo "PREGUNTA $((i + 1))" >> revision.txt
   for j in pregunta opciones; do
     
     echo "${preguntas[$i, $j]}" >> revision.txt
