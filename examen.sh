@@ -5,7 +5,7 @@
 # Grupo de prácticas PB1
 #
 # María Encarnación Sánchez Sánchez - 71062694P
-# Alejnadro Martín Martín           - 70832662E
+# Alejandro Martín Martín           - 70832662E
 #
 
 #
@@ -21,7 +21,7 @@
 ###################################################################################
 function uso () {
     echo 'Uso: ./examen.sh -f bancoPreguntas.txt [-n numeroPreguntas][-p porcentajeError][-r preguntasAleatorias][-rr respuestasAleatorias]'
-    echo 'Pista: ./examen.sh -h'
+    echo 'Ayuda: ./examen.sh -h'
 }
 
 ###################################################################################
@@ -35,13 +35,13 @@ function help () {
     echo 'Uso: ./examen.sh -f bancoPreguntas.txt [-n numeroPreguntas][-p porcentajeError][-r preguntasAleatorias][-rr respuestasAleatorias]'
     echo
     echo 'Permite realizar en el terminal un examen tipo test, cuyas preguntas están en un archivo .txt especificado con -f. Al finalizar la realización del examen se calcula la nota final.'
-    echo 'Además de mostrar la nota por pantalla, se creará un fichero de texto (revision.txt) con la revisión del examen. En el se incluirán las preguntas con su solución correcta, la solución proporcionada por el alumno y se mostrará si esta respuesta es correcta o incorrecta'
+    echo 'Además de mostrar la nota por pantalla, se creará un fichero de texto (revision.txt) con la revisión del examen. En él se incluirán las preguntas con su solución correcta, la solución proporcionada por el alumno y se mostrará si esta respuesta es correcta o incorrecta'
     echo 
     echo 'Lista de argumentos'
     echo '-f        Indica el fichero donde están incluidas las preguntas entre las cuales se seleccionara para hacer el examen. OBLIGATORIO'
     echo '-h        Ayuda de uso del programa'
     echo '-n        Indica el número de preguntas del examen. Si no se especifíca por defecto se incluyen 5 preguntas'
-    echo '-p        Indica el porcentaje, sobre la puntuación total de la pregunta, que penalizar una pregunta incorrecta. Si no se indica las preguntas incorrectas no penalizan'
+    echo '-p        Indica el porcentaje, sobre la puntuación total de la pregunta, que penaliza una pregunta incorrecta. Si no se indica las preguntas incorrectas no penalizan'
     echo '-r        Las preguntas se muestran de forma aleatoria'
     echo '-rr       Ordena de forma aleatoria las respuestas'
     echo 
@@ -70,7 +70,7 @@ function help () {
 ############################################################################
 function numero_mayor_0 () {
     # Usamos expresiones regulares
-    # +([0-9]) signifiva cualquier combinaciond de numeros del 0 al 9, y ^[^1-9] significa cualqier cadena que empiece 
+    # +([0-9]) signifiva cualquier combinacion de numeros del 0 al 9, y ^[^1-9] significa cualqier cadena que empiece 
     # por un caracter distinto del 1 o del 9 (de esta manera eliminamos posibles 0s)
     if [[ "$1" != +([0-9]) || "$1" =~ ^[^1-9] ]]
     then
@@ -202,11 +202,11 @@ then
     exit 1
 fi
 
-# Declaramos los valores por defecto: 
+# Declaramos los valores que el programa usa por defecto: 
 numeroPreguntas=5               # Examen de 5 preguntas
 preguntasAleatorias=false       # Sin preguntas aleatorias
 respuestasAleatorias=false      # Sin respuestas aleatorias
-porcentaje=0                    # Sin que las preguntas restes
+porcentaje=0                    # Sin que las preguntas resten
 
 # Declaramos un diccionario que me indica para cada argumento si el usuario
 # lo ha introducido al menos una vez. De esta manera podemos comprobar que no haya
@@ -340,7 +340,7 @@ do
         fi
     ;;
     -rr)
-        # Al igual que antes, comprobamos que no haya sido usado anteriormente
+        # Al igual que en el caso anterior, comprobamos que no haya sido usado anteriormente
         if [[ ${usado["-rr"]} == false ]]
         then
             respuestasAleatorias=true
@@ -375,11 +375,11 @@ fi
 declare -A todasPreguntas       # Almacenará todas las preguntas del fichero
 declare -A preguntas            # Almacenará solo el número de preguntas pedido
 
-# Como bash no permite arrays bidimensionales, hemos creado estos dos diccionarios, que intentan similar cada uno un array bidimensional
+# Como bash no permite arrays bidimensionales, hemos creado estos dos diccionarios, que intentan simular cada uno un array bidimensional
 # 
 # Ejemplo: Acceder al elemento ij 
     # Normalmente se accedería así: todasPreguntas[i][j]
-    # Para simular esa sintaxis, hemos utilizado una cadena de caracteres, de manera que los dos índices están separados por una coma
+    # Para simular esa sintaxis, hemos utilizado una cadena de caracteres, de manera que los dos índices están separados por una coma.
     # Por lo tanto, para acceder al elemento ij haríamos esto: todasPreguntas["$i, $j"]
 #
 # Descripción de los índices:
@@ -487,3 +487,106 @@ else
         done
     done 
 fi
+
+# PRESENTACION DEL EXAMEN POR PANTALLA
+
+nota=0  # En esta variables se va a ir calculando la nota pregunta a pregunta
+
+for ((i=0; i<numeroPreguntas; i++)); do
+
+  #Primero pongo por pantalla el numero de pregunta, su enunciado y sus opciones
+  echo "pregunta $((i + 1))"
+  
+  for j in pregunta opciones ; do
+  
+    echo "${preguntas[$i, $j]}"
+    
+  done
+  
+  # Después pedimos al usuario que introduzca la respuesta, que guardaremos en temporal para añadirla a el diccionario de Preguntas
+  # En el momento en el que guardamos la respuesta, usamos ^^ para convertir las letras a mayusculas
+  read -p "Respuesta: " temporal
+  preguntas+=( [$i, respuestaUsuario]=${temporal^^} )
+  
+  #Ahora compruebo si la respuesta esta fuera de rango con expresiones regulares
+  #[^ABCD] comprueba que la respuesta no sea A, B, C o D, [""] comprueba que la respuesta no este vacia y
+  #[ABCD]{2,} comprueba que la respuesta tenga 2 caracteres o mas.
+  
+  while [[ ${preguntas[$i, respuestaUsuario]} =~ [^ABCD] || ${preguntas[$i, respuestaUsuario]} == "" || ${preguntas[$i, respuestaUsuario]} =~ [ABCD]{2,} ]]; do
+
+    echo "Respuesta fuera de rango. Elige una opcion en rango (A, B, C, D)"
+    read -p "Respuesta: " temporal
+    preguntas[$i, respuestaUsuario]=${temporal^^} 
+    
+  done
+  
+  # Compruebo si la respuesta es Correcta o Incorrecta
+  if [[ ${preguntas[$i, respuestaUsuario]} == ${preguntas[$i, respuesta]} ]]; then
+  
+  
+  # Ahora calculo la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
+  # por tanto tenemos que utilizar Bash Calculator para realizar dichas operaciones. bc <<< le dice al programa que 
+  #use Bash calculator para realizar la operacion y scale=2 indica la cantidad de decimales a mostrar
+     nota=$(bc <<< "scale=2; $nota + 1")
+     
+     preguntas+=( [$i, correcto]="PREGUNTA ACERTADA" )
+    
+  else  
+  
+  # En caso de que las preguntas falladas no resten, el porcentaje es 0 por tanto 0/100 es 0  
+    nota=$(bc <<< "scale=2; $nota - 1*$porcentaje/100")
+    preguntas+=( [$i, correcto]="PREGUNTA FALLADA" )
+  fi 
+  
+  echo
+  
+# Compruebo si la nota es negativa con expresiones regulares. 
+# - comprueba que haya un - en la cadena, [0-9]* comprueba que haya 0 o mas caracteres entre 0 y 9
+# ([.][0-9]+)? comprueba que haya o 0 o 1 grupo de caracteres formado por un punto y 1 o mas caracteres entre 0 y 9
+done
+
+
+if  [[ "$nota" =~ -[0-9]*([.][0-9]+)? ]]; then
+  
+  nota=0
+fi
+
+# Cuando la nota esta entre 0 y 1, en la variable no se almacena el 0 que precede a los decimales.
+# en caso de que nota empieze con un grupo de caracteres formado por un punto y 1 o mas caracteres entre 0 y 9
+# le añadimos un 0 antes del punto.
+if [[ "$nota" =~ ^([.][0-9]+)$ ]]; then
+
+  nota=0$nota
+  
+fi  
+echo "Nota final:  $nota/ $numeroPreguntas"
+
+
+# CREACION DEL FICHERO DE REVISIÓN
+
+# Para crear y rellenar el fichero de texto, redirijo la salida de echo a un fichero llamado revision.txt
+# > indica a la orden echo que cree un fichero con ese nombre y si ya existia, que sobreescriba todo lo que hay
+# por la informacion pasada. Usar >> le dice a echo que cree el fichero y si ya existia que añada la informacion
+# al final del fichero
+
+echo " -----Revision del examen----- " > revision.txt
+echo "" >> revision.txt
+
+# Con este bucle for presento en el fichero todo el diccionario de preguntas
+for ((i=0;i<numeroPreguntas;i++)); do
+  
+  echo "pregunta $((i + 1))" >> revision.txt
+  for j in pregunta opciones; do
+    
+    echo "${preguntas[$i, $j]}" >> revision.txt
+    
+  done
+  
+  echo "Respuesta proporcionada por el alumno:  ${preguntas[$i, respuestaUsuario]}" >> revision.txt
+  echo "Respuesta correcta:                     ${preguntas[$i, respuesta]}" >> revision.txt
+  echo "${preguntas[$i, correcto]}" >> revision.txt
+  echo "" >> revision.txt
+done
+
+echo "Nota Final: $nota / $numeroPreguntas" >> revision.txt
+
