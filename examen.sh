@@ -113,18 +113,6 @@ function esta_contenido () {
 }
 
 ############################################################################
-# Elimina los retornos de carro ('\r') de un fichero dado
-# Uso: eliminar_retorno_carro fichero
-
-# ARGUMENTOS
-    # Fichero
-############################################################################
-function eliminar_retorno_carro () {
-    # tr con la opción -d nos permite eliminar un caracter determinado de un fichero
-    tr -d '\r' < "$1"
-}
-
-############################################################################
 # Pasa de codigo ascii a caracter
 # Uso: char codigo
 
@@ -400,12 +388,8 @@ declare -A preguntas            # Almacenará solo el número de preguntas pedid
 # ---------------------------------------------------------------------------------------------------------------------------
 # ...
 
-# le quitamos el retorno de carro (en caso de que el fichero haya sido escrito en windows)
-# para no tener problemas con los saltos de linea
-temp=$(eliminar_retorno_carro "$ficheroPreguntas")
-
 # Leemos el fichero linea a linea, eliminando los \n
-readarray -t lineas < <(echo "$temp")
+readarray -t lineas < "$ficheroPreguntas"
 
 # Recorro el vector con las líneas
 contador=0      # Indica el número de la pregunta
@@ -498,51 +482,51 @@ echo
 
 for ((i=0; i<numeroPreguntas; i++)); do
 
-  #Primero pongo por pantalla el numero de pregunta, su enunciado y sus opciones
-  echo "PREGUNTA $((i + 1))"
-  
-  for j in pregunta opciones ; do
-  
-    echo "${preguntas[$i, $j]}"
+    #Primero pongo por pantalla el numero de pregunta, su enunciado y sus opciones
+    echo "PREGUNTA $((i + 1))"
     
-  done
-  
-  # Después pedimos al usuario que introduzca la respuesta, que guardaremos en temporal para añadirla a el diccionario de Preguntas
-  # En el momento en el que guardamos la respuesta, usamos ^^ para convertir las letras a mayusculas
-  read -p "Respuesta: " temporal
-  preguntas+=( [$i, respuestaUsuario]=${temporal^^} )
-  
-  #Ahora compruebo si la respuesta esta fuera de rango con expresiones regulares
-  #[^ABCD] comprueba que la respuesta no sea A, B, C o D, [""] comprueba que la respuesta no este vacia y
-  #[ABCD]{2,} comprueba que la respuesta tenga 2 caracteres o mas.
-  
-  while [[ ${preguntas[$i, respuestaUsuario]} =~ [^ABCD] || ${preguntas[$i, respuestaUsuario]} == "" || ${preguntas[$i, respuestaUsuario]} =~ [ABCD]{2,} ]]; do
+    for j in pregunta opciones ; do
+    
+        echo "${preguntas[$i, $j]}"
 
-    echo "Respuesta fuera de rango. Elige una opcion en rango (A, B, C, D)"
+    done
+    
+    # Después pedimos al usuario que introduzca la respuesta, que guardaremos en temporal para añadirla a el diccionario de Preguntas
+    # En el momento en el que guardamos la respuesta, usamos ^^ para convertir las letras a mayusculas
     read -p "Respuesta: " temporal
-    preguntas[$i, respuestaUsuario]=${temporal^^} 
+    preguntas+=( [$i, respuestaUsuario]=${temporal^^} )
     
-  done
-  
-  # Compruebo si la respuesta es Correcta o Incorrecta
-  if [[ ${preguntas[$i, respuestaUsuario]} == "${preguntas[$i, respuesta]}" ]]; then
-  
-  
-  # Ahora calculo la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
-  # por tanto tenemos que utilizar Bash Calculator para realizar dichas operaciones. bc <<< le dice al programa que 
-  #use Bash calculator para realizar la operacion y scale=2 indica la cantidad de decimales a mostrar
-     nota=$(bc <<< "scale=2; $nota + 1")
-     
-     preguntas+=( [$i, correcto]="PREGUNTA ACERTADA" )
+    #Ahora compruebo si la respuesta esta fuera de rango con expresiones regulares
+    #[^ABCD] comprueba que la respuesta no sea A, B, C o D, [""] comprueba que la respuesta no este vacia y
+    #[ABCD]{2,} comprueba que la respuesta tenga 2 caracteres o mas.
     
-  else  
-  
-  # En caso de que las preguntas falladas no resten, el porcentaje es 0 por tanto 0/100 es 0  
-    nota=$(bc <<< "scale=2; $nota - 1*$porcentaje/100")
-    preguntas+=( [$i, correcto]="PREGUNTA FALLADA" )
-  fi 
-  
-  echo
+    while [[ ${preguntas[$i, respuestaUsuario]} =~ [^ABCD] || ${preguntas[$i, respuestaUsuario]} == "" || ${preguntas[$i, respuestaUsuario]} =~ [ABCD]{2,} ]]; do
+
+        echo "Respuesta fuera de rango. Elige una opcion en rango (A, B, C, D)"
+        read -p "Respuesta: " temporal
+        preguntas[$i, respuestaUsuario]=${temporal^^} 
+
+    done
+    
+    # Compruebo si la respuesta es Correcta o Incorrecta
+    if [[ ${preguntas[$i, respuestaUsuario]} == "${preguntas[$i, respuesta]}" ]]; then
+    
+    
+    # Ahora calculo la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
+    # por tanto tenemos que utilizar Bash Calculator para realizar dichas operaciones. bc <<< le dice al programa que 
+    #use Bash calculator para realizar la operacion y scale=2 indica la cantidad de decimales a mostrar
+        nota=$(bc <<< "scale=2; $nota + 1")
+
+        preguntas+=( [$i, correcto]="PREGUNTA ACERTADA" )
+
+    else  
+    
+    # En caso de que las preguntas falladas no resten, el porcentaje es 0 por tanto 0/100 es 0  
+        nota=$(bc <<< "scale=2; $nota - 1*$porcentaje/100")
+        preguntas+=( [$i, correcto]="PREGUNTA FALLADA" )
+    fi 
+    
+    echo
 done
 # Compruebo si la nota es negativa con expresiones regulares. 
 # - comprueba que haya un - en la cadena, [0-9]* comprueba que haya 0 o mas caracteres entre 0 y 9
@@ -550,7 +534,7 @@ done
 
 if  [[ "$nota" =~ -[0-9]*([.][0-9]+)? ]]; then
   
-  nota=0
+    nota=0
 fi
 
 # Cuando la nota esta entre 0 y 1, en la variable no se almacena el 0 que precede a los decimales.
@@ -558,7 +542,7 @@ fi
 # le añadimos un 0 antes del punto.
 if [[ "$nota" =~ ^([.][0-9]+)$ ]]; then
 
-  nota=0$nota
+    nota=0$nota
   
 fi  
 echo "Archivo con la revisión realizado."
@@ -579,17 +563,17 @@ echo "" >> revision.txt
 # Con este bucle for presento en el fichero todo el diccionario de preguntas
 for ((i=0;i<numeroPreguntas;i++)); do
   
-  echo "PREGUNTA $((i + 1))" >> revision.txt
-  for j in pregunta opciones; do
+    echo "PREGUNTA $((i + 1))" >> revision.txt
+    for j in pregunta opciones; do
+
+      echo "${preguntas[$i, $j]}" >> revision.txt
+
+    done
     
-    echo "${preguntas[$i, $j]}" >> revision.txt
-    
-  done
-  
-  echo "Respuesta proporcionada por el alumno:  ${preguntas[$i, respuestaUsuario]}" >> revision.txt
-  echo "Respuesta correcta:                     ${preguntas[$i, respuesta]}" >> revision.txt
-  echo "${preguntas[$i, correcto]}" >> revision.txt
-  echo "" >> revision.txt
+    echo "Respuesta proporcionada por el alumno:  ${preguntas[$i, respuestaUsuario]}" >> revision.txt
+    echo "Respuesta correcta:                     ${preguntas[$i, respuesta]}" >> revision.txt
+    echo "${preguntas[$i, correcto]}" >> revision.txt
+    echo "" >> revision.txt
 done
 
 echo "Nota Final: $nota / $numeroPreguntas" >> revision.txt
