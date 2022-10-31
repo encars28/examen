@@ -471,7 +471,6 @@ else
     done 
 fi
 
-declare -p preguntas
 # PRESENTACION DEL EXAMEN POR PANTALLA
 
 nota=0  # En esta variables se va a ir calculando la nota pregunta a pregunta
@@ -546,11 +545,15 @@ fi
 if [[ "$nota" =~ ^([.][0-9]+)$ ]]; then
 
     nota=0$nota
+fi
+
+# Pongo la nota sobre 10 puntos 
+nota=$(bc<<<"scale=2; $nota*10/$numeroPreguntas")
   
-fi  
+  
 echo "Archivo con la revisión realizado."
 echo
-echo "Nota final:  $nota / $numeroPreguntas"
+echo "Nota final:  $nota / 10"
 
 
 # CREACION DEL FICHERO DE REVISIÓN
@@ -579,5 +582,5 @@ for ((i=0;i<numeroPreguntas;i++)); do
     echo "" >> revision.txt
 done
 
-echo "Nota Final: $nota / $numeroPreguntas" >> revision.txt
+echo "Nota Final: $nota / 10" >> revision.txt
 

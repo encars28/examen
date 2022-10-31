@@ -1,14 +1,14 @@
  -----Revision del examen----- 
 
 PREGUNTA 1
-¿Qué es el código ASCII?
-A. Código que asigna a cada caracter un número.
-B. Es un código internacional.
-C. Es un código que se usa para pasar de decinal al binario.
-D. Es un código que se usa para pasar de bianrio a decimal.
+El número en binario 10111 se corresponde con el siguiente en decimal:
+A. 23.
+B. 17.
+C. 113.
+D. 150.
 
-Respuesta proporcionada por el alumno:  A
-Respuesta correcta:                     A
+Respuesta proporcionada por el alumno:  B
+Respuesta correcta:                     B
 PREGUNTA ACERTADA
 
 PREGUNTA 2
@@ -18,19 +18,41 @@ B. Cada dígito puede tomar sólo dos valores distintos.
 C. Cada dígito puede tomar sólo diez valores distintos.
 D. El número de dígitos está limitado.
 
-Respuesta proporcionada por el alumno:  B
+Respuesta proporcionada por el alumno:  A
 Respuesta correcta:                     B
-PREGUNTA ACERTADA
+PREGUNTA FALLADA
 
 PREGUNTA 3
+¿Qué es el código ASCII?
+A. Es un código que se usa para pasar de decinal al binario.
+B. Código que asigna a cada caracter un número.
+C. Es un código internacional.
+D. Es un código que se usa para pasar de bianrio a decimal.
+
+Respuesta proporcionada por el alumno:  B
+Respuesta correcta:                     A
+PREGUNTA FALLADA
+
+PREGUNTA 4
 El sistema de numeración decimal se caracteriza por:
-A. Sólo puede haber dos digi tos.
+A. Cada dígito puede tomar sólo diez valores distintos.
 B. Cada dígito puede tomar sólo dos valores.
-C. Cada dígito puede tomar sólo diez valores distintos.
-D. El número de dígitos está limitado.
+C. El número de dígitos está limitado.
+D. Sólo puede haber dos digi tos.
 
-Respuesta proporcionada por el alumno:  C
+Respuesta proporcionada por el alumno:  A
 Respuesta correcta:                     C
-PREGUNTA ACERTADA
+PREGUNTA FALLADA
 
-Nota Final: 3 / 3
+PREGUNTA 5
+El número en decimal 25 se expresa en binario de la siguiente forma:
+A. 1011100.
+B. 11001.
+C. 1010100.
+D. 11110.
+
+Respuesta proporcionada por el alumno:  B
+Respuesta correcta:                     D
+PREGUNTA FALLADA
+
+Nota Final: 0 / 10
