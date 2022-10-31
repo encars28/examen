@@ -1,6 +1,6 @@
  -----Revision del examen----- 
 
-pregunta 1
+PREGUNTA 1
 ¿Qué es el código ASCII?
 A. Código que asigna a cada caracter un número.
 B. Es un código internacional.
@@ -11,26 +11,26 @@ Respuesta proporcionada por el alumno:  A
 Respuesta correcta:                     A
 PREGUNTA ACERTADA
 
-pregunta 2
+PREGUNTA 2
 El sistema de numeración binario se caracteriza por:
 A. Sólo puede haber dos digitos.
 B. Cada dígito puede tomar sólo dos valores distintos.
 C. Cada dígito puede tomar sólo diez valores distintos.
 D. El número de dígitos está limitado.
 
-Respuesta proporcionada por el alumno:  A
+Respuesta proporcionada por el alumno:  B
 Respuesta correcta:                     B
-PREGUNTA FALLADA
+PREGUNTA ACERTADA
 
-pregunta 3
+PREGUNTA 3
 El sistema de numeración decimal se caracteriza por:
 A. Sólo puede haber dos digi tos.
 B. Cada dígito puede tomar sólo dos valores.
 C. Cada dígito puede tomar sólo diez valores distintos.
 D. El número de dígitos está limitado.
 
-Respuesta proporcionada por el alumno:  A
+Respuesta proporcionada por el alumno:  C
 Respuesta correcta:                     C
-PREGUNTA FALLADA
+PREGUNTA ACERTADA
 
-Nota Final: 1.00 / 3
+Nota Final: 3 / 3

@@ -389,7 +389,8 @@ declare -A preguntas            # Almacenará solo el número de preguntas pedid
 # ...
 
 # Leemos el fichero linea a linea, eliminando los \n
-readarray -t lineas < "$ficheroPreguntas"
+temp=$(sed 's/\r$//' "$ficheroPreguntas")
+readarray -t lineas < <(echo "$temp")
 
 # Recorro el vector con las líneas
 contador=0      # Indica el número de la pregunta
@@ -430,7 +431,7 @@ do
 
     # Guardamos la respuesta de manera que solo se guarde A, B, C o D
     # ${lineas[@]:$((inicio + 5)):1} -> A partir del elemento indicado por inicio + 5, cogemos un elemento
-    respuesta=$( echo "${lineas[@]:$((inicio + 5)):1}" | cut -f 2 -d ' ' )
+    respuesta=$( echo "${lineas[@]:$((inicio + 5)):1}" | cut -c 9 )
     todasPreguntas+=( ["$contador, respuesta"]=$respuesta )
 
     # Esta variable va a ir contando cuantas pregutnas tiene el fichero
@@ -470,6 +471,7 @@ else
     done 
 fi
 
+declare -p preguntas
 # PRESENTACION DEL EXAMEN POR PANTALLA
 
 nota=0  # En esta variables se va a ir calculando la nota pregunta a pregunta
@@ -494,7 +496,7 @@ for ((i=0; i<numeroPreguntas; i++)); do
     # Después pedimos al usuario que introduzca la respuesta, que guardaremos en temporal para añadirla a el diccionario de Preguntas
     # En el momento en el que guardamos la respuesta, usamos ^^ para convertir las letras a mayusculas
     read -p "Respuesta: " temporal
-    preguntas+=( [$i, respuestaUsuario]=${temporal^^} )
+    preguntas+=( ["$i, respuestaUsuario"]="${temporal^^}" )
     
     #Ahora compruebo si la respuesta esta fuera de rango con expresiones regulares
     #[^ABCD] comprueba que la respuesta no sea A, B, C o D, [""] comprueba que la respuesta no este vacia y
@@ -509,21 +511,22 @@ for ((i=0; i<numeroPreguntas; i++)); do
     done
     
     # Compruebo si la respuesta es Correcta o Incorrecta
-    if [[ ${preguntas[$i, respuestaUsuario]} == "${preguntas[$i, respuesta]}" ]]; then
-    
+    index1="$i, respuestaUsuario"
+    index2="$i, respuesta"
+    if [[ "${preguntas[$index1]}" == "${preguntas[$index2]}" ]]; then
     
     # Ahora calculo la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
     # por tanto tenemos que utilizar Bash Calculator para realizar dichas operaciones. bc <<< le dice al programa que 
     #use Bash calculator para realizar la operacion y scale=2 indica la cantidad de decimales a mostrar
         nota=$(bc <<< "scale=2; $nota + 1")
 
-        preguntas+=( [$i, correcto]="PREGUNTA ACERTADA" )
+        preguntas+=( ["$i, correcto"]="PREGUNTA ACERTADA" )
 
     else  
     
     # En caso de que las preguntas falladas no resten, el porcentaje es 0 por tanto 0/100 es 0  
         nota=$(bc <<< "scale=2; $nota - 1*$porcentaje/100")
-        preguntas+=( [$i, correcto]="PREGUNTA FALLADA" )
+        preguntas+=( ["$i, correcto"]="PREGUNTA FALLADA" )
     fi 
     
     echo
