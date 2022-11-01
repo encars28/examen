@@ -426,7 +426,7 @@ do
 
         printf -v opcionesCadena '%s\n' "${opcionesAleatorias[@]}"  
     fi
-
+    # a
     todasPreguntas+=( ["$contador, opciones"]="$opcionesCadena" )
 
     # Guardamos la respuesta de manera que solo se guarde A, B, C o D
