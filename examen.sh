@@ -569,7 +569,7 @@ do
     echo "PREGUNTA $((i + 1))" >> revision.txt
     for j in pregunta opciones
     do
-      echo "${preguntas[$i, $j]}" >> revision.txt
+        echo "${preguntas[$i, $j]}" >> revision.txt
     done
     
     echo "Respuesta proporcionada por el alumno:  ${preguntas[$i, respuestaUsuario]}" >> revision.txt
