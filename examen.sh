@@ -38,7 +38,7 @@ function help () {
     echo 'Además de mostrar la nota por pantalla, se creará un fichero de texto (revision.txt) con la revisión del examen. En él se incluirán las preguntas con su solución correcta, la solución proporcionada por el alumno y se mostrará si esta respuesta es correcta o incorrecta'
     echo 
     echo 'Lista de argumentos'
-    echo '-f        Indica el fichero donde están incluidas las preguntas entre las cuales se seleccionara para hacer el examen. OBLIGATORIO'
+    echo '-f        Indica el fichero donde están incluidas las preguntas entre las cuales se seleccionarán para hacer el examen. OBLIGATORIO'
     echo '-h        Ayuda de uso del programa'
     echo '-n        Indica el número de preguntas del examen. Si no se especifíca por defecto se incluyen 5 preguntas'
     echo '-p        Indica el porcentaje, sobre la puntuación total de la pregunta, que penaliza una pregunta incorrecta. Si no se indica las preguntas incorrectas no penalizan'
@@ -225,7 +225,7 @@ do
         continue
     fi
 
-   case "${params[$i]}" in
+    case "${params[$i]}" in
     -h)
         # Comprobamos que no se han pasado mas argumentos con -h
         # En caso contrario devolvemos un error
@@ -345,7 +345,7 @@ do
         uso
         exit 1
         ;;
-   esac
+    esac
 
 done
 
@@ -394,10 +394,11 @@ readarray -t lineas < <(echo "$temp")
 
 # Recorro el vector con las líneas
 contador=0      # Indica el número de la pregunta
+
 for (( inicio=0; inicio<${#lineas[@]}; inicio+=7 ))
 do
-    # Inicio se incrementa de 7 en 7 porque cada pregunta esta formada por 6 lineas + 1 salto de linea
 
+    # Inicio se incrementa de 7 en 7 porque cada pregunta esta formada por 6 lineas + 1 salto de linea
     # Guardo el enunciado en el campo pregunta
     # ${lineas[@]:$inicio:1} -> A partir del elemento indicada por inicio, coge 1 elemento
     todasPreguntas+=( ["$contador, pregunta"]="${lineas[@]:$inicio:1}" )
@@ -438,7 +439,7 @@ do
     contador=$((contador + 1))
 done
 
-# Coomprobamos que el numero de preguntas no sea mayor al que las que hay en el fichero
+# Comprobamos que el numero de preguntas no sea mayor al que las que hay en el fichero
 # En caso contrario devolvemos error
 preguntasFichero=$contador
 if [[ $numeroPreguntas -gt $preguntasFichero ]]
@@ -473,7 +474,7 @@ fi
 
 # PRESENTACION DEL EXAMEN POR PANTALLA
 
-nota=0  # En esta variables se va a ir calculando la nota pregunta a pregunta
+nota=0  # En esta variable se va a ir calculando la nota pregunta a pregunta
 
 echo "-------- EXAMEN --------"
 echo
@@ -499,6 +500,7 @@ do
     # Ahora comprobamos si la respuesta esta fuera de rango con expresiones regulares
     # [^ABCD] comprueba que la respuesta no sea A, B, C o D, [""] comprueba que la respuesta no este vacia y
     # [ABCD]{2,} comprueba que la respuesta tenga 2 caracteres o mas.
+    # En caso de que pase cualquiera de las validaciones, volvemos a pedir la respuesta y repetimos la validacion
     
     while [[ ${preguntas[$i, respuestaUsuario]} =~ [^ABCD] || ${preguntas[$i, respuestaUsuario]} == "" || ${preguntas[$i, respuestaUsuario]} =~ [ABCD]{2,} ]]
     do
@@ -508,9 +510,7 @@ do
     done
     
     # Compruebo si la respuesta es Correcta o Incorrecta
-    index1="$i, respuestaUsuario"
-    index2="$i, respuesta"
-    if [[ "${preguntas[$index1]}" == "${preguntas[$index2]}" ]]
+    if [[ "${preguntas[$i, respuestaUsuario]}" == "${preguntas[$i, respuesta]}" ]]
     then
         # Ahora calculamos la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
         # por tanto tenemos que utilizar Bash Calculator para realizar dichas operaciones. bc <<< le dice al programa que 
