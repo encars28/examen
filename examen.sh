@@ -426,7 +426,7 @@ do
 
         printf -v opcionesCadena '%s\n' "${opcionesAleatorias[@]}"  
     fi
-    # a
+
     todasPreguntas+=( ["$contador, opciones"]="$opcionesCadena" )
 
     # Guardamos la respuesta de manera que solo se guarde A, B, C o D
@@ -481,73 +481,70 @@ read -p "Pulsa cualquier tecla para empezar"
 echo
 echo
 
-for ((i=0; i<numeroPreguntas; i++)); do
-
-    #Primero pongo por pantalla el numero de pregunta, su enunciado y sus opciones
+for (( i=0; i<numeroPreguntas; i++ ))
+do
+    # Primero imprimimos por pantalla el numero de pregunta, su enunciado y sus opciones
     echo "PREGUNTA $((i + 1))"
     
-    for j in pregunta opciones ; do
-    
+    for j in pregunta opciones
+    do
         echo "${preguntas[$i, $j]}"
-
     done
     
-    # Después pedimos al usuario que introduzca la respuesta, que guardaremos en temporal para añadirla a el diccionario de Preguntas
+    # Después pedimos al usuario que introduzca la respuesta, que guardaremos en temporal para añadirla a preguntas
     # En el momento en el que guardamos la respuesta, usamos ^^ para convertir las letras a mayusculas
     read -p "Respuesta: " temporal
     preguntas+=( ["$i, respuestaUsuario"]="${temporal^^}" )
     
-    #Ahora compruebo si la respuesta esta fuera de rango con expresiones regulares
-    #[^ABCD] comprueba que la respuesta no sea A, B, C o D, [""] comprueba que la respuesta no este vacia y
-    #[ABCD]{2,} comprueba que la respuesta tenga 2 caracteres o mas.
+    # Ahora comprobamos si la respuesta esta fuera de rango con expresiones regulares
+    # [^ABCD] comprueba que la respuesta no sea A, B, C o D, [""] comprueba que la respuesta no este vacia y
+    # [ABCD]{2,} comprueba que la respuesta tenga 2 caracteres o mas.
     
-    while [[ ${preguntas[$i, respuestaUsuario]} =~ [^ABCD] || ${preguntas[$i, respuestaUsuario]} == "" || ${preguntas[$i, respuestaUsuario]} =~ [ABCD]{2,} ]]; do
-
+    while [[ ${preguntas[$i, respuestaUsuario]} =~ [^ABCD] || ${preguntas[$i, respuestaUsuario]} == "" || ${preguntas[$i, respuestaUsuario]} =~ [ABCD]{2,} ]]
+    do
         echo "Respuesta fuera de rango. Elige una opcion en rango (A, B, C, D)"
         read -p "Respuesta: " temporal
         preguntas[$i, respuestaUsuario]=${temporal^^} 
-
     done
     
     # Compruebo si la respuesta es Correcta o Incorrecta
     index1="$i, respuestaUsuario"
     index2="$i, respuesta"
-    if [[ "${preguntas[$index1]}" == "${preguntas[$index2]}" ]]; then
-    
-    # Ahora calculo la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
-    # por tanto tenemos que utilizar Bash Calculator para realizar dichas operaciones. bc <<< le dice al programa que 
-    #use Bash calculator para realizar la operacion y scale=2 indica la cantidad de decimales a mostrar
+    if [[ "${preguntas[$index1]}" == "${preguntas[$index2]}" ]]
+    then
+        # Ahora calculamos la nota correspondiente al valor de la pregunta. Bash no permite realizar operaciones con decimales,
+        # por tanto tenemos que utilizar Bash Calculator para realizar dichas operaciones. bc <<< le dice al programa que 
+        # use Bash calculator para realizar la operacion y scale=2 indica la cantidad de decimales a mostrar
         nota=$(bc <<< "scale=2; $nota + 1")
 
         preguntas+=( ["$i, correcto"]="PREGUNTA ACERTADA" )
-
     else  
-    
-    # En caso de que las preguntas falladas no resten, el porcentaje es 0 por tanto 0/100 es 0  
+        # En caso de que las preguntas falladas no resten, el porcentaje es 0 por tanto 0/100 es 0  
         nota=$(bc <<< "scale=2; $nota - 1*$porcentaje/100")
         preguntas+=( ["$i, correcto"]="PREGUNTA FALLADA" )
     fi 
     
     echo
 done
-# Compruebo si la nota es negativa con expresiones regulares. 
+
+# Comprobamos si la nota es negativa con expresiones regulares. 
 # - comprueba que haya un - en la cadena, [0-9]* comprueba que haya 0 o mas caracteres entre 0 y 9
 # ([.][0-9]+)? comprueba que haya o 0 o 1 grupo de caracteres formado por un punto y 1 o mas caracteres entre 0 y 9
 
-if  [[ "$nota" =~ -[0-9]*([.][0-9]+)? ]]; then
-  
+if  [[ "$nota" =~ -[0-9]*([.][0-9]+)? ]]
+then
     nota=0
 fi
 
 # Cuando la nota esta entre 0 y 1, en la variable no se almacena el 0 que precede a los decimales.
 # en caso de que nota empieze con un grupo de caracteres formado por un punto y 1 o mas caracteres entre 0 y 9
 # le añadimos un 0 antes del punto.
-if [[ "$nota" =~ ^([.][0-9]+)$ ]]; then
-
+if [[ "$nota" =~ ^([.][0-9]+)$ ]]
+then
     nota=0$nota
 fi
 
-# Pongo la nota sobre 10 puntos 
+# Ponemos la nota sobre 10 puntos 
 nota=$(bc<<<"scale=2; $nota*10/$numeroPreguntas")
   
   
@@ -567,13 +564,12 @@ echo " -----Revision del examen----- " > revision.txt
 echo "" >> revision.txt
 
 # Con este bucle for presento en el fichero todo el diccionario de preguntas
-for ((i=0;i<numeroPreguntas;i++)); do
-  
+for (( i=0; i<numeroPreguntas; i++ ))
+do
     echo "PREGUNTA $((i + 1))" >> revision.txt
-    for j in pregunta opciones; do
-
+    for j in pregunta opciones
+    do
       echo "${preguntas[$i, $j]}" >> revision.txt
-
     done
     
     echo "Respuesta proporcionada por el alumno:  ${preguntas[$i, respuestaUsuario]}" >> revision.txt
