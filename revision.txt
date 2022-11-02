@@ -1,48 +1,48 @@
  -----Revision del examen----- 
 
 PREGUNTA 1
-El número en decimal 25 se expresa en binario de la siguiente forma:
-A. 11110.
-B. 11001.
-C. 1010100.
-D. 1011100.
-
-Respuesta proporcionada por el alumno:  B
-Respuesta correcta:                     D
-PREGUNTA FALLADA
-
-PREGUNTA 2
 ¿Qué es el código ASCII?
 A. Código que asigna a cada caracter un número.
 B. Es un código internacional.
-C. Es un código que se usa para pasar de bianrio a decimal.
-D. Es un código que se usa para pasar de decinal al binario.
+C. Es un código que se usa para pasar de decinal al binario.
+D. Es un código que se usa para pasar de bianrio a decimal.
 
 Respuesta proporcionada por el alumno:  A
 Respuesta correcta:                     A
 PREGUNTA ACERTADA
 
-PREGUNTA 3
+PREGUNTA 2
 El sistema de numeración binario se caracteriza por:
-A. Cada dígito puede tomar sólo dos valores distintos.
-B. Sólo puede haber dos digitos.
-C. El número de dígitos está limitado.
-D. Cada dígito puede tomar sólo diez valores distintos.
+A. Sólo puede haber dos digitos.
+B. Cada dígito puede tomar sólo dos valores distintos.
+C. Cada dígito puede tomar sólo diez valores distintos.
+D. El número de dígitos está limitado.
 
 Respuesta proporcionada por el alumno:  B
 Respuesta correcta:                     B
 PREGUNTA ACERTADA
 
-PREGUNTA 4
+PREGUNTA 3
 El sistema de numeración decimal se caracteriza por:
-A. Sólo puede haber dos digi tos.
-B. Cada dígito puede tomar sólo diez valores distintos.
-C. El número de dígitos está limitado.
-D. Cada dígito puede tomar sólo dos valores.
+A. Sólo puede haber dos digitos.
+B. Cada dígito puede tomar sólo dos valores.
+C. Cada dígito puede tomar sólo diez valores distintos.
+D. El número de dígitos está limitado.
+
+Respuesta proporcionada por el alumno:  C
+Respuesta correcta:                     C
+PREGUNTA ACERTADA
+
+PREGUNTA 4
+El número en decimal 25 se expresa en binario de la siguiente forma:
+A. 11110.
+B. 1010100.
+C. 1011100.
+D. 11001.
 
 Respuesta proporcionada por el alumno:  D
-Respuesta correcta:                     C
-PREGUNTA FALLADA
+Respuesta correcta:                     D
+PREGUNTA ACERTADA
 
 PREGUNTA 5
 El número en binario 10111 se corresponde con el siguiente en decimal:
@@ -51,8 +51,8 @@ B. 23.
 C. 113.
 D. 17.
 
-Respuesta proporcionada por el alumno:  D
+Respuesta proporcionada por el alumno:  A
 Respuesta correcta:                     B
 PREGUNTA FALLADA
 
-Nota Final: 2.20 / 10
+Nota Final: 8.00 / 10

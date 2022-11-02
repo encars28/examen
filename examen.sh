@@ -388,14 +388,8 @@ declare -A preguntas            # Almacenará solo el número de preguntas pedid
 # ---------------------------------------------------------------------------------------------------------------------------
 # ...
 
-# Eliminamos los retornos de carro, porque si no luego dan problemas
-# s indica que queremos sustituir
-# Lo que viene después es el caracter a ser sustituido, en este caso /r
-# Por último tenemos el caracter por el que lo queremos sustituir, en este caso nada
-temp=$(sed 's/\r//' "$ficheroPreguntas")
-
-# Leemos el fichero linea a linea, eliminando los \n
-readarray -t lineas < <(echo "$temp")
+# # Leemos el fichero linea a linea, eliminando los \n
+readarray -t lineas < "$ficheroPreguntas"
 
 # Recorro el vector con las líneas
 contador=0      # Indica el número de la pregunta
