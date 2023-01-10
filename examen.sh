@@ -4,9 +4,6 @@
 # PRIMERA PRÁCTICA EVALUABLE
 # Grupo de prácticas PB1
 #
-# María Encarnación Sánchez Sánchez - 71062694P
-# Alejandro Martín Martín           - 70832662E
-#
 
 #
 # ========= FUNCIONES =========
